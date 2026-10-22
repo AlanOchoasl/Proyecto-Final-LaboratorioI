@@ -1,5 +1,5 @@
 
-package proyecto.pkgfinal.laboratorioi;
+package vista;
 
 public class ProyectoFinalLaboratorioI {
 
