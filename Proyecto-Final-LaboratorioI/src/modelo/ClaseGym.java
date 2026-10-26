@@ -80,7 +80,7 @@ public class ClaseGym {
 
     @Override
     public String toString() {
-        return "ClassGym{" + "idClase=" + idClase + ", entrenador=" + entrenador + '}';
+        return "ClaseGym{" + "idClase=" + idClase + ", entrenador=" + entrenador + '}';
     }
     
     
