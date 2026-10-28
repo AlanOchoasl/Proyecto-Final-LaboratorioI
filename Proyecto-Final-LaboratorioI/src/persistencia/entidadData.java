@@ -15,7 +15,7 @@ public class entidadData {
     }
     
     public boolean alta (Socio socio) throws SQLException {
-        String sql = "INSERT INTO socio (dni, Nombre, Apellido, Edad, Correo, telefono, Estado) VALUES (?, ?, ?, ?. ?, ?, ?)";
+        String sql = "INSERT INTO socio (dni, Nombre, Apellido, Edad, Correo, telefono, Estado) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = conexion.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
             ps.setString(1, String.valueOf(socio.getDni()));
             ps.setString(2, socio.getNombre());
