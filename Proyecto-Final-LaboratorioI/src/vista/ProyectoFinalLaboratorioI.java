@@ -7,14 +7,14 @@ import java.sql.SQLException;
 import java.util.List;
 import modelo.Socio;
 import persistencia.conexion;
-import persistencia.entidadData;
+import persistencia.SocioData;
 
 public class ProyectoFinalLaboratorioI {
 
     public static void main(String[] args) {
         try {
             conexion c = new conexion();
-            entidadData socioData = new entidadData(c.getConexion());
+            SocioData socioData = new SocioData(c.getConexion());
             
             Socio nuevoSocio = new Socio();
             nuevoSocio.setDni(20323456);
