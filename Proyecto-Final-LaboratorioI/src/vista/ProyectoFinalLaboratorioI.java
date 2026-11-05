@@ -55,5 +55,7 @@ public class ProyectoFinalLaboratorioI {
             System.err.println("Error al conectar o consultar la base de datos: " + e.getMessage());
             e.printStackTrace();
             }
+        
         }
 }
+
