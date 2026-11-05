@@ -17,7 +17,7 @@ public class ProyectoFinalLaboratorioI {
             SocioData socioData = new SocioData(c.getConexion());
             
             Socio nuevoSocio = new Socio();
-            nuevoSocio.setDni(20323456);
+            nuevoSocio.setDni("20323456");
             nuevoSocio.setNombre("Carlos");
             nuevoSocio.setApellido("Tevez");
             nuevoSocio.setEdad(29);
