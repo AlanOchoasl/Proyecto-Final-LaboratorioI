@@ -129,7 +129,7 @@ public class EntrenadorData {
     private Entrenador mapear(ResultSet rs) throws SQLException {
         Entrenador entrenador = new Entrenador();
         entrenador.setIdEntrenador(rs.getInt("id_Entrenador"));
-        entrenador.setDni(rs.getInt("Dni"));
+        entrenador.setDni(rs.getString("Dni"));
         entrenador.setNombre(rs.getString("Nombre"));
         entrenador.setApellido(rs.getString("Apellido"));
         entrenador.setEspecialidad(rs.getString("Especialidad"));

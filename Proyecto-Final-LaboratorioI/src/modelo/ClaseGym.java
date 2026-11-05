@@ -6,26 +6,26 @@ public class ClaseGym {
     private int idClase;
     private String disciplina;
     private Entrenador entrenador;
-    private LocalTime Horario;
+    private LocalTime horario;
     private int capacidad;
     private boolean estado;
 
     public ClaseGym() {
     }
 
-    public ClaseGym(String disciplina, Entrenador entrenador, LocalTime Horario, int capacidad, boolean estado) {
+    public ClaseGym(String disciplina, Entrenador entrenador, LocalTime horario, int capacidad, boolean estado) {
         this.disciplina = disciplina;
         this.entrenador = entrenador;
-        this.Horario = Horario;
+        this.horario = horario;
         this.capacidad = capacidad;
         this.estado = estado;
     }
 
-    public ClaseGym(int idClase, String disciplina, Entrenador entrenador, LocalTime Horario, int capacidad, boolean estado) {
+    public ClaseGym(int idClase, String disciplina, Entrenador entrenador, LocalTime horario, int capacidad, boolean estado) {
         this.idClase = idClase;
         this.disciplina = disciplina;
         this.entrenador = entrenador;
-        this.Horario = Horario;
+        this.horario = horario;
         this.capacidad = capacidad;
         this.estado = estado;
     }
@@ -55,11 +55,11 @@ public class ClaseGym {
     }
 
     public LocalTime getHorario() {
-        return Horario;
+        return horario;
     }
 
-    public void setHorario(LocalTime Horario) {
-        this.Horario = Horario;
+    public void setHorario(LocalTime horario) {
+        this.horario = horario;
     }
 
     public int getCapacidad() {
@@ -80,7 +80,7 @@ public class ClaseGym {
 
     @Override
     public String toString() {
-        return "ClaseGym{" + "idClase=" + idClase + ", entrenador=" + entrenador + '}';
+        return disciplina + " " + horario + " - " + entrenador;
     }
     
     
