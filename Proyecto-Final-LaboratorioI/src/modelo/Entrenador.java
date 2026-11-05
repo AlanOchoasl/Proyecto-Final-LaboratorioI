@@ -4,14 +4,14 @@ public class Entrenador {
     private int idEntrenador;
     private String nombre;
     private String apellido;
-    private int dni;
+    private String dni;
     private String especialidad;
     private boolean estado;
 
     public Entrenador() {
     }
 
-    public Entrenador(String nombre, String apellido, int dni, String especialidad, boolean estado) {
+    public Entrenador(String nombre, String apellido, String dni, String especialidad, boolean estado) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.dni = dni;
@@ -19,7 +19,7 @@ public class Entrenador {
         this.estado = estado;
     }
 
-    public Entrenador(int idEntrenador, String nombre, String apellido, int dni, String especialidad, boolean estado) {
+    public Entrenador(int idEntrenador, String nombre, String apellido, String dni, String especialidad, boolean estado) {
         this.idEntrenador = idEntrenador;
         this.nombre = nombre;
         this.apellido = apellido;
@@ -52,11 +52,11 @@ public class Entrenador {
         this.apellido = apellido;
     }
 
-    public int getDni() {
+    public String getDni() {
         return dni;
     }
 
-    public void setDni(int dni) {
+    public void setDni(String dni) {
         this.dni = dni;
     }
 
@@ -78,7 +78,7 @@ public class Entrenador {
 
     @Override
     public String toString() {
-        return "Entrenador{" + "nombre=" + nombre + ", apellido=" + apellido + ", dni=" + dni + '}';
+        return apellido + ", " + nombre + " (" + especialidad + ")";
     }
     
     

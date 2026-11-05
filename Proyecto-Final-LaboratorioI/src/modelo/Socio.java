@@ -4,7 +4,7 @@ public class Socio {
     private int idSocio;
     private String nombre;
     private String apellido;
-    private int dni;
+    private String dni;
     private int edad;
     private String correo;
     private int telefono;
@@ -13,7 +13,7 @@ public class Socio {
     public Socio() {
     }
 
-    public Socio(String nombre, String apellido, int dni, int edad, String correo, int telefono, boolean estado) {
+    public Socio(String nombre, String apellido, String dni, int edad, String correo, int telefono, boolean estado) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.dni = dni;
@@ -23,7 +23,7 @@ public class Socio {
         this.estado = estado;
     }
 
-    public Socio(int idSocio, String nombre, String apellido, int dni, int edad, String correo, int telefono, boolean estado) {
+    public Socio(int idSocio, String nombre, String apellido, String dni, int edad, String correo, int telefono, boolean estado) {
         this.idSocio = idSocio;
         this.nombre = nombre;
         this.apellido = apellido;
@@ -58,11 +58,11 @@ public class Socio {
         this.apellido = apellido;
     }
 
-    public int getDni() {
+    public String getDni() {
         return dni;
     }
 
-    public void setDni(int dni) {
+    public void setDni(String dni) {
         this.dni = dni;
     }
 
@@ -100,7 +100,7 @@ public class Socio {
 
     @Override
     public String toString() {
-        return "Socio{" + "nombre=" + nombre + ", apellido=" + apellido + ", dni=" + dni + '}';
+        return apellido + ", " + nombre + " (DNI " + dni + ")";
     }
     
     
