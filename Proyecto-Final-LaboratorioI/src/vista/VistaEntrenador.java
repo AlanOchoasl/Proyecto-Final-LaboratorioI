@@ -1,20 +1,33 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
- */
+
 package vista;
 
-/**
- *
- * @author NoxiePC
- */
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+import javax.swing.JComponent;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import modelo.Entrenador;
+import persistencia.EntrenadorData;
+
+
 public class VistaEntrenador extends javax.swing.JInternalFrame {
 
-    /**
-     * Creates new form VistaEntrenador
-     */
-    public VistaEntrenador() {
+
+    private static final Pattern NOMBRE = Pattern.compile("[\\p{L}][\\p{L} .'-]*");
+
+    private EntrenadorData entrenadorData;
+    private Entrenador entrenadorCargado;
+
+    private List<Entrenador> listaActual = new ArrayList<>();
+
+    public VistaEntrenador(Connection cn) {
         initComponents();
+        entrenadorData = new EntrenadorData(cn);
+        cargarTabla();
+        limpiar();
     }
 
     /**
@@ -26,27 +39,457 @@ public class VistaEntrenador extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        grupoEstado = new javax.swing.ButtonGroup();
+        lblTitulo = new javax.swing.JLabel();
+        lblId = new javax.swing.JLabel();
+        lblDni = new javax.swing.JLabel();
+        lblNombre = new javax.swing.JLabel();
+        lblApellido = new javax.swing.JLabel();
+        lblEspecialidad = new javax.swing.JLabel();
+        lblEstado = new javax.swing.JLabel();
+        txtId = new javax.swing.JTextField();
+        txtDni = new javax.swing.JTextField();
+        txtNombre = new javax.swing.JTextField();
+        txtApellido = new javax.swing.JTextField();
+        txtEspecialidad = new javax.swing.JTextField();
+        rbActivo = new javax.swing.JRadioButton();
+        rbInactivo = new javax.swing.JRadioButton();
+        btnBuscar = new javax.swing.JButton();
+        btnNuevo = new javax.swing.JButton();
+        btnGuardar = new javax.swing.JButton();
+        btnActualizar = new javax.swing.JButton();
+        btnEliminar = new javax.swing.JButton();
+        lblFiltro = new javax.swing.JLabel();
+        cmbFiltro = new javax.swing.JComboBox<>();
+        scrollTabla = new javax.swing.JScrollPane();
+        tabla = new javax.swing.JTable();
+
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
         setResizable(true);
         setTitle("Entrenadores");
 
+        lblTitulo.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        lblTitulo.setText("Entrenadores de AboriGym");
+
+        lblId.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        lblId.setText("ID:");
+
+        lblDni.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        lblDni.setText("DNI:");
+
+        lblNombre.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        lblNombre.setText("Nombre:");
+
+        lblApellido.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        lblApellido.setText("Apellido:");
+
+        lblEspecialidad.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        lblEspecialidad.setText("Especialidad:");
+
+        lblEstado.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        lblEstado.setText("Estado:");
+
+        txtId.setEditable(false);
+
+        grupoEstado.add(rbActivo);
+        rbActivo.setSelected(true);
+        rbActivo.setText("Activo");
+
+        grupoEstado.add(rbInactivo);
+        rbInactivo.setText("Inactivo");
+
+        btnBuscar.setText("Buscar");
+        btnBuscar.setToolTipText("Busca por el DNI escrito");
+        btnBuscar.addActionListener(this::btnBuscarActionPerformed);
+
+        btnNuevo.setText("Nuevo");
+        btnNuevo.addActionListener(this::btnNuevoActionPerformed);
+
+        btnGuardar.setText("Guardar");
+        btnGuardar.addActionListener(this::btnGuardarActionPerformed);
+
+        btnActualizar.setText("Actualizar");
+        btnActualizar.addActionListener(this::btnActualizarActionPerformed);
+
+        btnEliminar.setText("Eliminar");
+        btnEliminar.addActionListener(this::btnEliminarActionPerformed);
+
+        lblFiltro.setText("Mostrar:");
+
+        cmbFiltro.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Todos", "Activos", "Inactivos" }));
+        cmbFiltro.addActionListener(this::cmbFiltroActionPerformed);
+
+        tabla.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "ID", "DNI", "Nombre", "Apellido", "Especialidad", "Estado"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tabla.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaMouseClicked(evt);
+            }
+        });
+        scrollTabla.setViewportView(tabla);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 394, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblId)
+                            .addComponent(lblDni)
+                            .addComponent(lblNombre)
+                            .addComponent(lblApellido)
+                            .addComponent(lblEspecialidad)
+                            .addComponent(lblEstado))
+                        .addGap(34, 34, 34)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(rbActivo)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(rbInactivo))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(txtId, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
+                                    .addComponent(txtDni)
+                                    .addComponent(txtNombre)
+                                    .addComponent(txtApellido)
+                                    .addComponent(txtEspecialidad))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnBuscar))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnNuevo)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnGuardar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnActualizar))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(197, 197, 197)
+                        .addComponent(btnEliminar)))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lblFiltro)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cmbFiltro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(scrollTabla, javax.swing.GroupLayout.DEFAULT_SIZE, 560, Short.MAX_VALUE))
+                .addContainerGap())
+            .addComponent(lblTitulo, javax.swing.GroupLayout.Alignment.CENTER)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 274, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblTitulo)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblId)
+                            .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(12, 12, 12)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblDni)
+                            .addComponent(txtDni, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnBuscar))
+                        .addGap(12, 12, 12)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblNombre)
+                            .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(12, 12, 12)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblApellido)
+                            .addComponent(txtApellido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(12, 12, 12)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblEspecialidad)
+                            .addComponent(txtEspecialidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(12, 12, 12)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblEstado)
+                            .addComponent(rbActivo)
+                            .addComponent(rbInactivo))
+                        .addGap(30, 30, 30)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnNuevo)
+                            .addComponent(btnGuardar)
+                            .addComponent(btnActualizar))
+                        .addGap(10, 10, 10)
+                        .addComponent(btnEliminar))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblFiltro)
+                            .addComponent(cmbFiltro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(scrollTabla, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
+        String texto = txtDni.getText().trim();
+        if (!texto.matches("\\d{1,9}")) {
+            aviso("Ingrese un DNI numérico para buscar.", txtDni);
+            return;
+        }
+        try {
+            Entrenador e = entrenadorData.buscarPorDni(String.valueOf(Integer.parseInt(texto)));
+            if (e == null) {
+                aviso("No se encontró ningún entrenador con ese DNI.", txtDni);
+            } else {
+                mostrar(e);
+            }
+        } catch (SQLException ex) {
+            error("No se pudo realizar la búsqueda.", ex);
+        }
+    }//GEN-LAST:event_btnBuscarActionPerformed
+
+    private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
+        limpiar();
+    }//GEN-LAST:event_btnNuevoActionPerformed
+
+    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
+
+        Entrenador nuevo = leerFormulario();
+        if (nuevo == null) {
+            return;
+        }
+        try {
+            if (entrenadorData.buscarPorDni(String.valueOf(nuevo.getDni())) != null) {
+                aviso("Ya existe un entrenador con ese DNI.", txtDni);
+                return;
+            }
+            if (entrenadorData.alta(nuevo)) {
+                info("Entrenador guardado correctamente. ID asignado: " + nuevo.getIdEntrenador());
+                limpiar();
+                cargarTabla();
+            } else {
+                aviso("No se pudo guardar el entrenador.", null);
+            }
+        } catch (SQLException ex) {
+            error("No se pudo guardar el entrenador.", ex);
+        }
+    }//GEN-LAST:event_btnGuardarActionPerformed
+
+    private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
+        if (entrenadorCargado == null) {
+            aviso("Seleccione un entrenador de la tabla o búsquelo por DNI.", null);
+            return;
+        }
+        Entrenador modificado = leerFormulario();
+        if (modificado == null) {
+            return;
+        }
+        int id = entrenadorCargado.getIdEntrenador();
+        modificado.setIdEntrenador(id);
+        try {
+            Entrenador otro = entrenadorData.buscarPorDni(String.valueOf(modificado.getDni()));
+            if (otro != null && otro.getIdEntrenador() != id) {
+                aviso("Otro entrenador ya tiene ese DNI.", txtDni);
+                return;
+            }
+            if (entrenadorData.actualizar(modificado)) {
+                info("Entrenador actualizado correctamente.");
+                limpiar();
+                cargarTabla();
+            } else {
+                aviso("No se pudo actualizar el entrenador.", null);
+            }
+        } catch (SQLException ex) {
+            error("No se pudo actualizar el entrenador.", ex);
+        }
+    }//GEN-LAST:event_btnActualizarActionPerformed
+
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+        if (entrenadorCargado == null) {
+            return;
+        }
+        if (!confirmar("¿Eliminar definitivamente a " + entrenadorCargado.getNombre() + " "
+                + entrenadorCargado.getApellido() + "?\nEsta acción no se puede deshacer.\n"
+                + "(Cuidado)", "Confirmar eliminación")) {
+            return;
+        }
+        try {
+            if (entrenadorData.borrar(entrenadorCargado.getIdEntrenador())) {
+                info("Entrenador eliminado.");
+                limpiar();
+                cargarTabla();
+            } else {
+                aviso("No se pudo eliminar. Es probable que el entrenador tenga clases asignadas. "
+                        , null);
+            }
+        } catch (SQLException ex) {
+            error("No se pudo eliminar el entrenador.", ex);
+        }
+    }//GEN-LAST:event_btnEliminarActionPerformed
+
+    private void cmbFiltroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbFiltroActionPerformed
+        cargarTabla();
+    }//GEN-LAST:event_cmbFiltroActionPerformed
+
+    private void tablaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaMouseClicked
+        int fila = tabla.getSelectedRow();
+        if (fila >= 0 && fila < listaActual.size()) {
+            mostrar(listaActual.get(fila));
+        }
+    }//GEN-LAST:event_tablaMouseClicked
+
+    private void cargarTabla() {
+        try {
+            List<Entrenador> todos = entrenadorData.listar();
+            String filtro = (String) cmbFiltro.getSelectedItem();
+
+            DefaultTableModel modeloTabla = (DefaultTableModel) tabla.getModel();
+            modeloTabla.setRowCount(0);
+            listaActual = new ArrayList<>();
+
+            for (Entrenador e : todos) {
+                if ("Activos".equals(filtro) && !e.isEstado()) {
+                    continue;
+                }
+                if ("Inactivos".equals(filtro) && e.isEstado()) {
+                    continue;
+                }
+                listaActual.add(e);
+                modeloTabla.addRow(new Object[]{
+                    e.getIdEntrenador(), e.getDni(), e.getNombre(), e.getApellido(),
+                    e.getEspecialidad(), e.isEstado() ? "Activo" : "Inactivo"
+                });
+            }
+        } catch (SQLException ex) {
+            error("No se pudo cargar la lista de entrenadores.", ex);
+        }
+    }
+    
+    private void mostrar(Entrenador e) {
+        entrenadorCargado = e;
+        txtId.setText(String.valueOf(e.getIdEntrenador()));
+        txtDni.setText(String.valueOf(e.getDni()));
+        txtNombre.setText(e.getNombre());
+        txtApellido.setText(e.getApellido());
+        txtEspecialidad.setText(e.getEspecialidad());
+        rbActivo.setSelected(e.isEstado());
+        rbInactivo.setSelected(!e.isEstado());
+        actualizarBotones();
+    }
+
+
+    private void limpiar() {
+        entrenadorCargado = null;
+        txtId.setText("");
+        txtDni.setText("");
+        txtNombre.setText("");
+        txtApellido.setText("");
+        txtEspecialidad.setText("");
+        rbActivo.setSelected(true);
+        tabla.clearSelection();
+        actualizarBotones();
+        txtDni.requestFocusInWindow();
+    }
+
+
+    private void actualizarBotones() {
+        boolean hay = entrenadorCargado != null;
+        btnGuardar.setEnabled(!hay);
+        btnActualizar.setEnabled(hay);
+        btnEliminar.setEnabled(hay);
+
+    }
+
+    private Entrenador leerFormulario() {
+        String dniTxt = txtDni.getText().trim();
+        if (!dniTxt.matches("\\d{7,8}")) {
+            aviso("El DNI debe tener 7 u 8 números, sin puntos.", txtDni);
+            return null;
+        }
+        int dni = Integer.parseInt(dniTxt);
+
+        String nombre = txtNombre.getText().trim();
+        if (!NOMBRE.matcher(nombre).matches() || nombre.length() > 40) {
+            aviso("El nombre es obligatorio, solo letras.", txtNombre);
+            return null;
+        }
+
+        String apellido = txtApellido.getText().trim();
+        if (!NOMBRE.matcher(apellido).matches() || apellido.length() > 40) {
+            aviso("El apellido es obligatorio, solo letras.", txtApellido);
+            return null;
+        }
+
+        String especialidad = txtEspecialidad.getText().trim();
+        if (especialidad.isEmpty() || especialidad.length() > 40) {
+            aviso("La especialidad es obligatoria.", txtEspecialidad);
+            return null;
+        }
+
+        return new Entrenador(nombre, apellido, dni, especialidad, rbActivo.isSelected());
+    }
+
+
+    private void aviso(String mensaje, JComponent foco) {
+        JOptionPane.showMessageDialog(this, mensaje, "Atención", JOptionPane.WARNING_MESSAGE);
+        if (foco != null) {
+            foco.requestFocusInWindow();
+        }
+    }
+
+    private void info(String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje, "AboriGym", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void error(String mensaje, SQLException ex) {
+        JOptionPane.showMessageDialog(this, mensaje + "\n" + ex.getMessage(),
+                "Error de base de datos", JOptionPane.ERROR_MESSAGE);
+    }
+
+    private boolean confirmar(String mensaje, String titulo) {
+        return JOptionPane.showConfirmDialog(this, mensaje, titulo,
+                JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION;
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnActualizar;
+    private javax.swing.JButton btnBuscar;
+    private javax.swing.JButton btnEliminar;
+    private javax.swing.JButton btnGuardar;
+    private javax.swing.JButton btnNuevo;
+    private javax.swing.JComboBox<String> cmbFiltro;
+    private javax.swing.ButtonGroup grupoEstado;
+    private javax.swing.JLabel lblApellido;
+    private javax.swing.JLabel lblDni;
+    private javax.swing.JLabel lblEspecialidad;
+    private javax.swing.JLabel lblEstado;
+    private javax.swing.JLabel lblFiltro;
+    private javax.swing.JLabel lblId;
+    private javax.swing.JLabel lblNombre;
+    private javax.swing.JLabel lblTitulo;
+    private javax.swing.JRadioButton rbActivo;
+    private javax.swing.JRadioButton rbInactivo;
+    private javax.swing.JScrollPane scrollTabla;
+    private javax.swing.JTable tabla;
+    private javax.swing.JTextField txtApellido;
+    private javax.swing.JTextField txtDni;
+    private javax.swing.JTextField txtEspecialidad;
+    private javax.swing.JTextField txtId;
+    private javax.swing.JTextField txtNombre;
     // End of variables declaration//GEN-END:variables
 }
