@@ -32,8 +32,8 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="lblId" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="lblDni" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -51,26 +51,24 @@
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                  <Component id="txtId" alignment="0" pref="150" max="32767" attributes="0"/>
-                                  <Component id="txtDni" alignment="0" max="32767" attributes="0"/>
-                                  <Component id="txtNombre" alignment="0" max="32767" attributes="0"/>
-                                  <Component id="txtApellido" alignment="0" max="32767" attributes="0"/>
-                                  <Component id="txtEspecialidad" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="txtId" alignment="0" min="-2" pref="150" max="-2" attributes="0"/>
+                                  <Component id="txtDni" alignment="0" min="-2" pref="150" max="-2" attributes="0"/>
+                                  <Component id="txtNombre" alignment="0" min="-2" pref="150" max="-2" attributes="0"/>
+                                  <Component id="txtApellido" alignment="0" min="-2" pref="150" max="-2" attributes="0"/>
+                                  <Component id="txtEspecialidad" alignment="0" min="-2" pref="150" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace max="32767" attributes="0"/>
+                              <EmptySpace min="-2" max="-2" attributes="0"/>
                               <Component id="btnBuscar" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
-                  <Group type="102" alignment="0" attributes="0">
+                  <Group type="102" attributes="0">
                       <Component id="btnNuevo" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="btnGuardar" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="btnActualizar" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="-2" pref="197" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="btnEliminar" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -127,14 +125,13 @@
                           <Component id="rbActivo" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="rbInactivo" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="39" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="btnNuevo" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="btnGuardar" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="btnActualizar" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="btnEliminar" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
-                      <Component id="btnEliminar" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="3" attributes="0">
@@ -142,7 +139,7 @@
                           <Component id="cmbFiltro" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="scrollTabla" pref="330" max="32767" attributes="0"/>
+                      <Component id="scrollTabla" min="-2" pref="278" max="-2" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
