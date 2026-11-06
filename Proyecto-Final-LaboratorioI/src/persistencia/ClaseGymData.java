@@ -134,7 +134,7 @@ public class ClaseGymData {
     private ClaseGym mapear(ResultSet rs) throws SQLException {
         Entrenador entrenador = new Entrenador();
         entrenador.setIdEntrenador(rs.getInt("id_Entrenador"));
-        entrenador.setDni(rs.getString("EntrenadorDni"));
+        entrenador.setDni(rs.getInt("EntrenadorDni"));
         entrenador.setNombre(rs.getString("EntrenadorNombre"));
         entrenador.setApellido(rs.getString("EntrenadorApellido"));
         entrenador.setEspecialidad(rs.getString("EntrenadorEspecialidad"));

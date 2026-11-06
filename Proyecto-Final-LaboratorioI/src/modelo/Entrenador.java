@@ -4,14 +4,14 @@ public class Entrenador {
     private int idEntrenador;
     private String nombre;
     private String apellido;
-    private String dni;
+    private int dni;
     private String especialidad;
     private boolean estado;
 
     public Entrenador() {
     }
 
-    public Entrenador(String nombre, String apellido, String dni, String especialidad, boolean estado) {
+    public Entrenador(String nombre, String apellido, int dni, String especialidad, boolean estado) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.dni = dni;
@@ -19,7 +19,7 @@ public class Entrenador {
         this.estado = estado;
     }
 
-    public Entrenador(int idEntrenador, String nombre, String apellido, String dni, String especialidad, boolean estado) {
+    public Entrenador(int idEntrenador, String nombre, String apellido, int dni, String especialidad, boolean estado) {
         this.idEntrenador = idEntrenador;
         this.nombre = nombre;
         this.apellido = apellido;
@@ -52,11 +52,11 @@ public class Entrenador {
         this.apellido = apellido;
     }
 
-    public String getDni() {
+    public int getDni() {
         return dni;
     }
 
-    public void setDni(String dni) {
+    public void setDni(int dni) {
         this.dni = dni;
     }
 

@@ -39,6 +39,7 @@ public class VistaSocio extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        buttonGroup1 = new javax.swing.ButtonGroup();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -91,6 +92,7 @@ public class VistaSocio extends javax.swing.JInternalFrame {
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel6.setText("Estado:");
 
+        buttonGroup1.add(rbActivo);
         rbActivo.setText("Activo");
 
         txtDni.addActionListener(this::txtDniActionPerformed);
@@ -136,6 +138,7 @@ public class VistaSocio extends javax.swing.JInternalFrame {
         jBtnBuscar.setText("Buscar");
         jBtnBuscar.addActionListener(this::jBtnBuscarActionPerformed);
 
+        buttonGroup1.add(rbInactivo);
         rbInactivo.setText("Inactivo");
 
         jLabel7.setText("Edad:");
@@ -285,7 +288,7 @@ public class VistaSocio extends javax.swing.JInternalFrame {
             return;
         }
         try {
-            Socio s = socioData.buscarPorDni(String.valueOf(Integer.parseInt(texto)));
+            Socio s = socioData.buscarPorDni(Integer.parseInt(texto));
             if (s == null) {
                 aviso("No se encontró ningún socio con ese DNI.", txtDni);
             } else {
@@ -308,7 +311,7 @@ public class VistaSocio extends javax.swing.JInternalFrame {
             return;
         }
         try {
-            if (socioData.buscarPorDni(String.valueOf(nuevo.getDni())) != null) {
+            if (socioData.buscarPorDni(nuevo.getDni()) != null) {
                 aviso("Ya existe un socio con ese DNI.", txtDni);
                 return;
             }
@@ -342,7 +345,7 @@ public class VistaSocio extends javax.swing.JInternalFrame {
         int id = socioCargado.getIdSocio();
         modificado.setIdSocio(id);
         try {
-            Socio otro = socioData.buscarPorDni(String.valueOf(modificado.getDni()));
+            Socio otro = socioData.buscarPorDni(modificado.getDni());
             if (otro != null && otro.getIdSocio() != id) {
                 aviso("Otro socio ya tiene ese DNI.", txtDni);
                 return;
@@ -548,6 +551,7 @@ public class VistaSocio extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnEliminar;
     private javax.swing.JButton btnGuardar;
     private javax.swing.JButton btnNuevo;
+    private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JComboBox<String> cmbFiltro;
     private javax.swing.JButton jBtnBuscar;
     private javax.swing.JLabel jLabel1;
