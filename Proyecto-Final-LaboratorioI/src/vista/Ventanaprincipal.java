@@ -4,19 +4,24 @@
  */
 package vista;
 
-/**
- *
- * @author NoxiePC
- */
+import com.mysql.jdbc.Connection;
+import java.sql.SQLException;
+import javax.swing.JInternalFrame;
+import javax.swing.JOptionPane;
+import persistencia.conexion;
+
 public class Ventanaprincipal extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Ventanaprincipal.class.getName());
 
-    /**
-     * Creates new form Ventanaprincipal
-     */
+    private conexion con;
+    
+    private VistaSocio vistaSocio;
+    private VistaEntrenador vistaEntrenador;
+    
     public Ventanaprincipal() {
         initComponents();
+        conectar();
     }
 
     /**
@@ -31,9 +36,9 @@ public class Ventanaprincipal extends javax.swing.JFrame {
         jDesktopPane1 = new javax.swing.JDesktopPane();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
-        jMenuIGestionSocios = new javax.swing.JMenuItem();
-        jMenuItem1 = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
+        jMenuGestionSocios = new javax.swing.JMenuItem();
+        jMenuEntrenadores = new javax.swing.JMenuItem();
+        jMenuSalir = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -50,18 +55,19 @@ public class Ventanaprincipal extends javax.swing.JFrame {
 
         jMenu1.setText("Administración");
 
-        jMenuIGestionSocios.setText("Gestionar Socios");
-        jMenuIGestionSocios.addActionListener(this::jMenuIGestionSociosActionPerformed);
-        jMenu1.add(jMenuIGestionSocios);
+        jMenuGestionSocios.setText("Gestionar Socios");
+        jMenuGestionSocios.addActionListener(this::jMenuGestionSociosActionPerformed);
+        jMenu1.add(jMenuGestionSocios);
 
-        jMenuItem1.setText("Gestionar Entrenadores");
-        jMenuItem1.addActionListener(this::jMenuItem1ActionPerformed);
-        jMenu1.add(jMenuItem1);
+        jMenuEntrenadores.setText("Gestionar Entrenadores");
+        jMenuEntrenadores.addActionListener(this::jMenuEntrenadoresActionPerformed);
+        jMenu1.add(jMenuEntrenadores);
 
         jMenuBar1.add(jMenu1);
 
-        jMenu2.setText("Salir");
-        jMenuBar1.add(jMenu2);
+        jMenuSalir.setText("Salir");
+        jMenuSalir.addActionListener(this::jMenuSalirActionPerformed);
+        jMenuBar1.add(jMenuSalir);
 
         setJMenuBar(jMenuBar1);
 
@@ -79,14 +85,70 @@ public class Ventanaprincipal extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jMenuIGestionSociosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuIGestionSociosActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jMenuIGestionSociosActionPerformed
+    private void jMenuGestionSociosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuGestionSociosActionPerformed
+        if (vistaSocio == null || vistaSocio.isClosed()) {
+            vistaSocio = new VistaSocio(con.getConexion());
+            mostrar(vistaSocio);
+        } else {
+            traerAlFrente(vistaSocio);
+        }
+    }//GEN-LAST:event_jMenuGestionSociosActionPerformed
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
+    private void jMenuEntrenadoresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuEntrenadoresActionPerformed
+        if (vistaEntrenador == null || vistaEntrenador.isClosed()) {
+            vistaEntrenador = new VistaEntrenador(con.getConexion());
+            mostrar(vistaEntrenador);
+        } else {
+            traerAlFrente(vistaEntrenador);
+        }
+    }//GEN-LAST:event_jMenuEntrenadoresActionPerformed
 
+    private void jMenuSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuSalirActionPerformed
+        // TODO add your handling code here:
+        try {
+            if (con != null) {
+                con.cerrar(); 
+            }
+        } catch (SQLException ex) {
+            logger.log(java.util.logging.Level.WARNING, null, ex);
+        }
+        System.exit(0);
+    }//GEN-LAST:event_jMenuSalirActionPerformed
+    private void conectar() {
+        try {
+            con = new conexion();
+        } catch (SQLException ex) {
+            logger.log(java.util.logging.Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this,
+                    "No se pudo conectar con la base de datos 'aborigym'.\n"
+                    + "Verifique que MySQL/MariaDB esté iniciado (XAMPP) y que el driver esté en las librerías.\n\n"
+                    + ex.getMessage(),
+                    "Error de conexión", JOptionPane.ERROR_MESSAGE);
+            jMenuGestionSocios.setEnabled(false);
+            jMenuEntrenadores.setEnabled(false);
+        }
+    }
+
+    private void mostrar(JInternalFrame ventana) {
+        jDesktopPane1.add(ventana);
+        int x = Math.max(0, (jDesktopPane1.getWidth() - ventana.getWidth()) / 2);
+        int y = Math.max(0, (jDesktopPane1.getHeight() - ventana.getHeight()) / 2);
+        ventana.setLocation(x, y);
+        ventana.setVisible(true);
+    }
+    
+    private void traerAlFrente(JInternalFrame ventana) {
+        try {
+            if (ventana.isIcon()) {
+                ventana.setIcon(false);
+            }
+            ventana.setSelected(true);
+        } catch (java.beans.PropertyVetoException ex) {
+            logger.log(java.util.logging.Level.WARNING, null, ex);
+        }
+        ventana.toFront();
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -115,9 +177,9 @@ public class Ventanaprincipal extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuIGestionSocios;
-    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuEntrenadores;
+    private javax.swing.JMenuItem jMenuGestionSocios;
+    private javax.swing.JMenu jMenuSalir;
     // End of variables declaration//GEN-END:variables
 }
