@@ -111,7 +111,7 @@ public class AsistenciaData {
     private Asistencia mapear(ResultSet rs) throws SQLException {
         Entrenador entrenador = new Entrenador();
         entrenador.setIdEntrenador(rs.getInt("id_Entrenador"));
-        entrenador.setDni(rs.getString("EntrenadorDni"));
+        entrenador.setDni(rs.getInt("EntrenadorDni"));
         entrenador.setNombre(rs.getString("EntrenadorNombre"));
         entrenador.setApellido(rs.getString("EntrenadorApellido"));
         entrenador.setEspecialidad(rs.getString("EntrenadorEspecialidad"));
@@ -127,7 +127,7 @@ public class AsistenciaData {
 
         Socio socio = new Socio();
         socio.setIdSocio(rs.getInt("id_Socio"));
-        socio.setDni(rs.getString("SocioDni"));
+        socio.setDni(rs.getInt("SocioDni"));
         socio.setNombre(rs.getString("SocioNombre"));
         socio.setApellido(rs.getString("SocioApellido"));
         socio.setEdad(rs.getInt("SocioEdad"));

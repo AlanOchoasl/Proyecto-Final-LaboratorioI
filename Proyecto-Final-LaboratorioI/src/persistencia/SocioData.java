@@ -46,10 +46,10 @@ public class SocioData {
         }
     }
 
-    public Socio buscarPorDni(String dni) throws SQLException {
+    public Socio buscarPorDni(int dni) throws SQLException {
         String sql = "SELECT id_Socio, dni, Nombre, Apellido, Edad, Correo, telefono, Estado FROM socio WHERE dni = ?";
         try (PreparedStatement ps = conexion.prepareStatement(sql)) {
-            ps.setString(1, dni);
+            ps.setInt(1, dni);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next() ? mapear(rs) : null;
             }
@@ -133,7 +133,7 @@ public class SocioData {
     private Socio mapear(ResultSet rs) throws SQLException {
         Socio socio = new Socio();
         socio.setIdSocio(rs.getInt("id_Socio"));
-        socio.setDni(rs.getString("dni"));
+        socio.setDni(rs.getInt("dni"));
         socio.setNombre(rs.getString("Nombre"));
         socio.setApellido(rs.getString("Apellido"));
         socio.setEdad(rs.getInt("Edad"));

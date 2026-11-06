@@ -136,7 +136,7 @@ public class PaseData {
     private Pase mapear(ResultSet rs) throws SQLException {
         Socio socio = new Socio();
         socio.setIdSocio(rs.getInt("id_Socio"));
-        socio.setDni(rs.getString("SocioDni"));
+        socio.setDni(rs.getInt("SocioDni"));
         socio.setNombre(rs.getString("SocioNombre"));
         socio.setApellido(rs.getString("SocioApellido"));
         socio.setEdad(rs.getInt("SocioEdad"));
