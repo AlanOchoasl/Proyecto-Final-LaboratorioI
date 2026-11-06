@@ -15,7 +15,7 @@ public class ProyectoFinalLaboratorioI {
         try {
             conexion c = new conexion();
             SocioData socioData = new SocioData(c.getConexion());
-            
+
             Socio nuevoSocio = new Socio();
             nuevoSocio.setDni("20323456");
             nuevoSocio.setNombre("Carlos");
@@ -25,14 +25,14 @@ public class ProyectoFinalLaboratorioI {
             nuevoSocio.setTelefono(44323355);
             nuevoSocio.setEstado(true);
 
-    boolean exito = socioData.alta(nuevoSocio);
+            boolean exito = socioData.alta(nuevoSocio);
 
-    if (exito) {
-        System.out.println("¡Socio agregado con éxito! ID asignado: " + nuevoSocio.getIdSocio());
-    } else {
-        System.out.println("No se pudo registrar el socio.");
-    }
-            
+            if (exito) {
+                System.out.println("¡Socio agregado con exito! ID asignado: " + nuevoSocio.getIdSocio());
+            } else {
+                System.out.println("No se pudo registrar el socio.");
+            }
+
             List<Socio> listaSocios = socioData.listar();
 
             if (listaSocios.isEmpty()) {
@@ -50,12 +50,42 @@ public class ProyectoFinalLaboratorioI {
                     System.out.println("----------------------------------------");
                 }
             }
+            int idPrueba = nuevoSocio.getIdSocio();
+            //buscar por dni
+            System.out.println("buscar por dni " + nuevoSocio.getDni());
+            mostrarSocio(socioData.buscarPorDni(nuevoSocio.getDni()));
+            //actualizar
+            Socio socioModificar = socioData.buscar(idPrueba);
+            socioModificar.setNombre("Martina");
+            socioModificar.setApellido("Lopez");
+            socioModificar.setEdad(28);
+            socioModificar.setCorreo("martinalopez23@gmail.com");
+            socioModificar.setTelefono(32456741);
+            
+            boolean actualizado = socioData.actualizar(socioModificar);
+            System.out.println(actualizado ? "Socio actualizado con exito" : "No se encontro el socio");
+            mostrarSocio(socioData.buscar(idPrueba));
 
         } catch (SQLException e) {
             System.err.println("Error al conectar o consultar la base de datos: " + e.getMessage());
             e.printStackTrace();
-            }
-        
         }
-}
 
+    }
+
+    private static void mostrarSocio(Socio socio) {
+        if (socio == null) {
+            System.out.println("no se encontro el socio");
+            return;
+        }
+        System.out.println("ID: " + socio.getIdSocio());
+        System.out.println("DNI: " + socio.getDni());
+        System.out.println("Nombre y Apellido: " + socio.getNombre() + " " + socio.getApellido());
+        System.out.println("Edad: " + socio.getEdad());
+        System.out.println("Correo: " + socio.getCorreo());
+        System.out.println("Telefono: " + socio.getTelefono());
+        System.out.println("Estado: " + (socio.isEstado() ? "Activo" : "Inactivo"));
+        System.out.println("----------------------------------------");
+
+    }
+}
