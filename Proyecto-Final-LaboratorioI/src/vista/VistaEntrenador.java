@@ -92,6 +92,7 @@ public class VistaEntrenador extends javax.swing.JInternalFrame {
         lblEstado.setText("Estado:");
 
         txtId.setEditable(false);
+        txtId.addActionListener(this::txtIdActionPerformed);
 
         grupoEstado.add(rbActivo);
         rbActivo.setSelected(true);
@@ -190,14 +191,16 @@ public class VistaEntrenador extends javax.swing.JInternalFrame {
                         .addComponent(cmbFiltro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(scrollTabla, javax.swing.GroupLayout.DEFAULT_SIZE, 560, Short.MAX_VALUE))
                 .addContainerGap())
-            .addComponent(lblTitulo, javax.swing.GroupLayout.Alignment.CENTER)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(226, 226, 226)
+                .addComponent(lblTitulo)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
                 .addComponent(lblTitulo)
-                .addGap(18, 18, 18)
+                .addGap(24, 24, 24)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -350,6 +353,10 @@ public class VistaEntrenador extends javax.swing.JInternalFrame {
             mostrar(listaActual.get(fila));
         }
     }//GEN-LAST:event_tablaMouseClicked
+
+    private void txtIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtIdActionPerformed
 
     private void cargarTabla() {
         try {
