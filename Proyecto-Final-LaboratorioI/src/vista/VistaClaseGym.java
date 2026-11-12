@@ -1,41 +1,71 @@
 
 package vista;
-import java.awt.Component;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
-import javax.swing.DefaultListCellRenderer;
+import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import modelo.ClaseGym;
 import modelo.Entrenador;
 import persistencia.ClaseGymData;
 import persistencia.EntrenadorData;
+
 public class VistaClaseGym extends javax.swing.JInternalFrame {
- 
- private static final Pattern DISCIPLINA = Pattern.compile("[\\p{L}][\\p{L} .'-]*");
+
+    private static final Pattern DISCIPLINA = Pattern.compile("[\\p{L}][\\p{L}\\p{N} .'-]*");
     private static final DateTimeFormatter FORMATO_HORA = DateTimeFormatter.ofPattern("HH:mm");
 
     private ClaseGymData claseData;
     private EntrenadorData entrenadorData;
-    private ClaseGym claseCargada;   // clase seleccionada en la tabla (null = clase nueva)
+    private ClaseGym claseCargada;
     private List<ClaseGym> listaActual = new ArrayList<>();
+    private List<Entrenador> entrenadoresCombo = new ArrayList<>();
     private DefaultTableModel modeloTabla;
-    
+
     public VistaClaseGym(Connection cn) {
         initComponents();
-        modeloTabla = (DefaultTableModel) tblClases.getModel();
+
+        modeloTabla = new DefaultTableModel(
+                new Object[]{"ID", "Disciplina", "Entrenador", "Horario", "Capacidad", "Estado"}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        tblClases.setModel(modeloTabla);
+
         claseData = new ClaseGymData(cn);
         entrenadorData = new EntrenadorData(cn);
-    }  
+
+        txtId.setEditable(false);
+
+        ButtonGroup grupoEstado = new ButtonGroup();
+        grupoEstado.add(rbActivo);
+        grupoEstado.add(rbInactivo);
+        rbActivo.setSelected(true);
+
+        cargarEntrenadores();
+
+        tblClases.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                int fila = tblClases.getSelectedRow();
+                if (fila >= 0 && fila < listaActual.size()) {
+                    mostrar(listaActual.get(fila));
+                }
+            }
+        });
+
+        cargarTabla();
+        limpiar();
+    }
 
          
   
@@ -271,31 +301,245 @@ public class VistaClaseGym extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtCapacidadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCapacidadActionPerformed
-        // TODO add your handling code here:
     }//GEN-LAST:event_txtCapacidadActionPerformed
 
     private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
-
+        limpiar();
     }//GEN-LAST:event_btnNuevoActionPerformed
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-   
+        ClaseGym nueva = leerFormulario();
+        if (nueva == null) {
+            return;
+        }
+        try {
+            if (claseData.alta(nueva)) {
+                info("Clase guardada correctamente. ID asignado: " + nueva.getIdClase());
+                limpiar();
+                cargarTabla();
+            } else {
+                aviso("No se pudo guardar la clase.", null);
+            }
+        } catch (SQLException ex) {
+            error("No se pudo guardar la clase.", ex);
+        }
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
-  
+        if (claseCargada == null) {
+            aviso("Seleccione una clase de la tabla.", null);
+            return;
+        }
+
+        ClaseGym modificada = leerFormulario();
+        if (modificada == null) {
+            return;
+        }
+        modificada.setIdClase(claseCargada.getIdClase());
+
+        try {
+            if (claseData.actualizar(modificada)) {
+                info("Clase actualizada correctamente.");
+                limpiar();
+                cargarTabla();
+            } else {
+                aviso("No se pudo actualizar la clase.", null);
+            }
+        } catch (SQLException ex) {
+            error("No se pudo actualizar la clase.", ex);
+        }
     }//GEN-LAST:event_btnActualizarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-  
+        if (claseCargada == null) {
+            aviso("Seleccione una clase de la tabla.", null);
+            return;
+        }
+        if (!confirmar("¿Eliminar esta clase?\nEsta acción no se puede deshacer.",
+                "Confirmar eliminación")) {
+            return;
+        }
+        try {
+            if (claseData.borrar(claseCargada.getIdClase())) {
+                info("Clase eliminada.");
+                limpiar();
+                cargarTabla();
+            } else {
+                aviso("No se pudo eliminar la clase.\n"
+                        + "Puede tener asistencias asociadas.", null);
+            }
+        } catch (SQLException ex) {
+            error("No se pudo eliminar la clase.", ex);
+        }
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void cmbMostrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbMostrarActionPerformed
- 
+        cargarTabla();
+        limpiar();
     }//GEN-LAST:event_cmbMostrarActionPerformed
-  
-     
-     
+
+    private void cargarEntrenadores() {
+        try {
+            entrenadoresCombo = entrenadorData.listar();
+            cmbEntrenador.removeAllItems();
+            for (Entrenador e : entrenadoresCombo) {
+                String texto = e.getApellido() + ", " + e.getNombre()
+                        + " (" + e.getEspecialidad() + ")";
+                if (!e.isEstado()) {
+                    texto += " - Inactivo";
+                }
+                cmbEntrenador.addItem(texto);
+            }
+            if (cmbEntrenador.getItemCount() == 0) {
+                cmbEntrenador.setSelectedIndex(-1);
+            }
+        } catch (SQLException ex) {
+            error("No se pudo cargar la lista de entrenadores.", ex);
+        }
+    }
+
+    private void cargarTabla() {
+        try {
+            int filtro = cmbMostrar.getSelectedIndex();
+            List<ClaseGym> clases;
+            if (filtro == 1) {
+                clases = claseData.listarActivos();
+            } else if (filtro == 2) {
+                clases = claseData.listar();
+                clases.removeIf(ClaseGym::isEstado);
+            } else {
+                clases = claseData.listar();
+            }
+
+            modeloTabla.setRowCount(0);
+            listaActual = new ArrayList<>();
+            for (ClaseGym c : clases) {
+                listaActual.add(c);
+                String entrenador = "";
+                if (c.getEntrenador() != null) {
+                    entrenador = c.getEntrenador().getApellido() + ", "
+                            + c.getEntrenador().getNombre();
+                }
+                modeloTabla.addRow(new Object[]{
+                    c.getIdClase(),
+                    c.getDisciplina(),
+                    entrenador,
+                    c.getHorario().format(FORMATO_HORA),
+                    c.getCapacidad(),
+                    c.isEstado() ? "Activo" : "Inactivo"
+                });
+            }
+        } catch (SQLException ex) {
+            error("No se pudo cargar la lista de clases.", ex);
+        }
+    }
+
+    private void mostrar(ClaseGym c) {
+        claseCargada = c;
+        txtId.setText(String.valueOf(c.getIdClase()));
+        txtDisciplina.setText(c.getDisciplina());
+        seleccionarEntrenador(c.getEntrenador() == null ? 0 : c.getEntrenador().getIdEntrenador());
+        txtHorario.setText(c.getHorario().format(FORMATO_HORA));
+        txtCapacidad.setText(String.valueOf(c.getCapacidad()));
+        rbActivo.setSelected(c.isEstado());
+        rbInactivo.setSelected(!c.isEstado());
+        actualizarBotones();
+    }
+
+    private void seleccionarEntrenador(int idEntrenador) {
+        for (int i = 0; i < entrenadoresCombo.size(); i++) {
+            if (entrenadoresCombo.get(i).getIdEntrenador() == idEntrenador) {
+                cmbEntrenador.setSelectedIndex(i);
+                return;
+            }
+        }
+    }
+
+    private void limpiar() {
+        claseCargada = null;
+        txtId.setText("");
+        txtDisciplina.setText("");
+        if (cmbEntrenador.getItemCount() > 0) {
+            cmbEntrenador.setSelectedIndex(0);
+        } else {
+            cmbEntrenador.setSelectedIndex(-1);
+        }
+        txtHorario.setText("");
+        txtCapacidad.setText("");
+        rbActivo.setSelected(true);
+        tblClases.clearSelection();
+        actualizarBotones();
+        txtDisciplina.requestFocusInWindow();
+    }
+
+    private void actualizarBotones() {
+        boolean hay = claseCargada != null;
+        btnGuardar.setEnabled(!hay);
+        btnActualizar.setEnabled(hay);
+        btnEliminar.setEnabled(hay);
+    }
+
+    private ClaseGym leerFormulario() {
+        String disciplina = txtDisciplina.getText().trim();
+        if (disciplina.isEmpty() || !DISCIPLINA.matcher(disciplina).matches()) {
+            aviso("Ingrese una disciplina válida (letras, números, espacios, puntos, guiones o apóstrofes).",
+                    txtDisciplina);
+            return null;
+        }
+
+        int iEntrenador = cmbEntrenador.getSelectedIndex();
+        if (iEntrenador < 0 || iEntrenador >= entrenadoresCombo.size()) {
+            aviso("Seleccione un entrenador.", cmbEntrenador);
+            return null;
+        }
+
+        String horarioTxt = txtHorario.getText().trim();
+        LocalTime horario;
+        try {
+            horario = LocalTime.parse(horarioTxt, FORMATO_HORA);
+        } catch (DateTimeParseException e) {
+            aviso("El horario debe tener el formato HH:mm (por ejemplo 18:30).", txtHorario);
+            return null;
+        }
+
+        String capacidadTxt = txtCapacidad.getText().trim();
+        int capacidad;
+        try {
+            capacidad = Integer.parseInt(capacidadTxt);
+        } catch (NumberFormatException e) {
+            aviso("La capacidad debe ser un número entero.", txtCapacidad);
+            return null;
+        }
+        if (capacidad <= 0) {
+            aviso("La capacidad debe ser mayor que cero.", txtCapacidad);
+            return null;
+        }
+
+        boolean estado = !rbInactivo.isSelected();
+        return new ClaseGym(disciplina, entrenadoresCombo.get(iEntrenador),
+                horario, capacidad, estado);
+    }
+
+    private void aviso(String mensaje, JComponent foco) {
+        JOptionPane.showMessageDialog(this, mensaje, "Atención", JOptionPane.WARNING_MESSAGE);
+        if (foco != null) {
+            foco.requestFocusInWindow();
+        }
+    }
+
+    private void info(String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje, "AboriGym", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void error(String mensaje, SQLException ex) {
+        JOptionPane.showMessageDialog(this, mensaje + "\n" + ex.getMessage(),
+                "Error de base de datos", JOptionPane.ERROR_MESSAGE);
+    }
+
+    private boolean confirmar(String mensaje, String titulo) {
+        return JOptionPane.showConfirmDialog(this, mensaje, titulo,
+                JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION;
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnActualizar;
