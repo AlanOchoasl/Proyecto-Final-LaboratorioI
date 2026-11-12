@@ -4,7 +4,6 @@
  */
 package vista;
 
-import com.mysql.jdbc.Connection;
 import java.sql.SQLException;
 import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
@@ -19,6 +18,8 @@ public class Ventanaprincipal extends javax.swing.JFrame {
     private VistaSocio vistaSocio;
     private VistaEntrenador vistaEntrenador;
     private VistaClaseGym vistaClaseGym;
+    private VistaPase vistaPase;
+    private VistaAsistencia vistaAsistencia;
     
     public Ventanaprincipal() {
         initComponents();
@@ -40,6 +41,8 @@ public class Ventanaprincipal extends javax.swing.JFrame {
         jMenuClaseGym = new javax.swing.JMenuItem();
         jMenuGestionSocios = new javax.swing.JMenuItem();
         jMenuEntrenadores = new javax.swing.JMenuItem();
+        jMenuPase = new javax.swing.JMenuItem();
+        jMenuAsistencias = new javax.swing.JMenuItem();
         jMenuSalir = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -68,6 +71,14 @@ public class Ventanaprincipal extends javax.swing.JFrame {
         jMenuEntrenadores.setText("Gestionar Entrenadores");
         jMenuEntrenadores.addActionListener(this::jMenuEntrenadoresActionPerformed);
         jMenu1.add(jMenuEntrenadores);
+
+        jMenuPase.setText("Gestionar Pases");
+        jMenuPase.addActionListener(this::jMenuPaseActionPerformed);
+        jMenu1.add(jMenuPase);
+
+        jMenuAsistencias.setText("Gestionar Asistencias");
+        jMenuAsistencias.addActionListener(this::jMenuAsistenciasActionPerformed);
+        jMenu1.add(jMenuAsistencias);
 
         jMenuBar1.add(jMenu1);
 
@@ -129,6 +140,25 @@ public class Ventanaprincipal extends javax.swing.JFrame {
             traerAlFrente(vistaClaseGym);
         }
     }//GEN-LAST:event_jMenuClaseGymActionPerformed
+
+    private void jMenuPaseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuPaseActionPerformed
+        if (vistaPase == null || vistaPase.isClosed()) {
+            vistaPase = new VistaPase(con.getConexion());
+            mostrar(vistaPase);
+        } else {
+            traerAlFrente(vistaPase);
+        }
+    }//GEN-LAST:event_jMenuPaseActionPerformed
+
+    private void jMenuAsistenciasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuAsistenciasActionPerformed
+        if (vistaAsistencia == null || vistaAsistencia.isClosed()) {
+            vistaAsistencia = new VistaAsistencia(con.getConexion());
+            mostrar(vistaAsistencia);
+        } else {
+            traerAlFrente(vistaAsistencia);
+        }
+    }//GEN-LAST:event_jMenuAsistenciasActionPerformed
+
     private void conectar() {
         try {
             con = new conexion();
@@ -141,6 +171,9 @@ public class Ventanaprincipal extends javax.swing.JFrame {
                     "Error de conexión", JOptionPane.ERROR_MESSAGE);
             jMenuGestionSocios.setEnabled(false);
             jMenuEntrenadores.setEnabled(false);
+            jMenuClaseGym.setEnabled(false);
+            jMenuPase.setEnabled(false);
+            jMenuAsistencias.setEnabled(false);
         }
     }
 
@@ -193,7 +226,9 @@ public class Ventanaprincipal extends javax.swing.JFrame {
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuAsistencias;
     private javax.swing.JMenuItem jMenuClaseGym;
+    private javax.swing.JMenuItem jMenuPase;
     private javax.swing.JMenuItem jMenuEntrenadores;
     private javax.swing.JMenuItem jMenuGestionSocios;
     private javax.swing.JMenu jMenuSalir;
