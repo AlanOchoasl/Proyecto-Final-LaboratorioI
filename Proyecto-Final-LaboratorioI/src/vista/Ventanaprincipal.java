@@ -18,6 +18,7 @@ public class Ventanaprincipal extends javax.swing.JFrame {
     
     private VistaSocio vistaSocio;
     private VistaEntrenador vistaEntrenador;
+    private VistaClaseGym vistaClaseGym;
     
     public Ventanaprincipal() {
         initComponents();
@@ -36,6 +37,7 @@ public class Ventanaprincipal extends javax.swing.JFrame {
         jDesktopPane1 = new javax.swing.JDesktopPane();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
+        jMenuClaseGym = new javax.swing.JMenuItem();
         jMenuGestionSocios = new javax.swing.JMenuItem();
         jMenuEntrenadores = new javax.swing.JMenuItem();
         jMenuSalir = new javax.swing.JMenu();
@@ -54,6 +56,10 @@ public class Ventanaprincipal extends javax.swing.JFrame {
         );
 
         jMenu1.setText("Administración");
+
+        jMenuClaseGym.setText("Gestionar ClaseGym");
+        jMenuClaseGym.addActionListener(this::jMenuClaseGymActionPerformed);
+        jMenu1.add(jMenuClaseGym);
 
         jMenuGestionSocios.setText("Gestionar Socios");
         jMenuGestionSocios.addActionListener(this::jMenuGestionSociosActionPerformed);
@@ -79,7 +85,7 @@ public class Ventanaprincipal extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jDesktopPane1)
+            .addComponent(jDesktopPane1, javax.swing.GroupLayout.Alignment.TRAILING)
         );
 
         pack();
@@ -114,6 +120,15 @@ public class Ventanaprincipal extends javax.swing.JFrame {
         }
         System.exit(0);
     }//GEN-LAST:event_jMenuSalirActionPerformed
+
+    private void jMenuClaseGymActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuClaseGymActionPerformed
+         if (vistaClaseGym == null || vistaClaseGym.isClosed()) {
+            vistaClaseGym = new VistaClaseGym(con.getConexion());
+            mostrar(vistaClaseGym);
+        } else {
+            traerAlFrente(vistaClaseGym);
+        }
+    }//GEN-LAST:event_jMenuClaseGymActionPerformed
     private void conectar() {
         try {
             con = new conexion();
@@ -178,8 +193,10 @@ public class Ventanaprincipal extends javax.swing.JFrame {
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuClaseGym;
     private javax.swing.JMenuItem jMenuEntrenadores;
     private javax.swing.JMenuItem jMenuGestionSocios;
     private javax.swing.JMenu jMenuSalir;
     // End of variables declaration//GEN-END:variables
 }
+
