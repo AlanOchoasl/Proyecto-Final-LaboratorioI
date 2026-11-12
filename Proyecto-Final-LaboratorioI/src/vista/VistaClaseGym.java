@@ -35,25 +35,10 @@ public class VistaClaseGym extends javax.swing.JInternalFrame {
         modeloTabla = (DefaultTableModel) tblClases.getModel();
         claseData = new ClaseGymData(cn);
         entrenadorData = new EntrenadorData(cn);
-        
-        cmbEntrenador.setRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList<?> lista, Object valor,
-                    int indice, boolean seleccionado, boolean foco) {
-                super.getListCellRendererComponent(lista, valor, indice, seleccionado, foco);
-                if (valor instanceof Entrenador) {
-                    Entrenador e = (Entrenador) valor;
-                    setText(e.getApellido() + ", " + e.getNombre() + " (" + e.getEspecialidad() + ")");
-                }
-                return this;
-            }
-        });
+    }  
 
-        cargarEntrenadores("");
-        cargarTabla();
-        limpiar();
-    }
-    
+         
+  
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -290,23 +275,23 @@ public class VistaClaseGym extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_txtCapacidadActionPerformed
 
     private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
-     limpiar();
+
     }//GEN-LAST:event_btnNuevoActionPerformed
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-     guardar();
+   
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
-     actualizar();
+  
     }//GEN-LAST:event_btnActualizarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-    eliminar();
+  
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void cmbMostrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbMostrarActionPerformed
-   cargarTabla();
+ 
     }//GEN-LAST:event_cmbMostrarActionPerformed
   
      
