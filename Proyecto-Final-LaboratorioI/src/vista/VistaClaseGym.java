@@ -15,6 +15,7 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import modelo.ClaseGym;
 import modelo.Entrenador;
+import modelo.ReglaNegocioException;
 import persistencia.ClaseGymData;
 import persistencia.EntrenadorData;
 
@@ -140,7 +141,7 @@ public class VistaClaseGym extends javax.swing.JInternalFrame {
         btnActualizar.setText("Actualizar");
         btnActualizar.addActionListener(this::btnActualizarActionPerformed);
 
-        btnEliminar.setText("Eliminar");
+        btnEliminar.setText("Dar baja");
         btnEliminar.addActionListener(this::btnEliminarActionPerformed);
 
         cmbMostrar.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Todos", "Activo", "Inactivo" }));
@@ -216,7 +217,7 @@ public class VistaClaseGym extends javax.swing.JInternalFrame {
                         .addGap(7, 7, 7)
                         .addComponent(btnActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnEliminar, javax.swing.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                         .addComponent(txtHorario, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -228,7 +229,7 @@ public class VistaClaseGym extends javax.swing.JInternalFrame {
                                 .addComponent(lblCapacidad)
                                 .addGap(18, 18, 18)
                                 .addComponent(txtCapacidad, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 571, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(75, 75, 75))
         );
@@ -288,7 +289,7 @@ public class VistaClaseGym extends javax.swing.JInternalFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(210, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -320,6 +321,8 @@ public class VistaClaseGym extends javax.swing.JInternalFrame {
             } else {
                 aviso("No se pudo guardar la clase.", null);
             }
+        } catch (ReglaNegocioException ex) {
+            aviso(ex.getMessage(), null);
         } catch (SQLException ex) {
             error("No se pudo guardar la clase.", ex);
         }
@@ -345,6 +348,8 @@ public class VistaClaseGym extends javax.swing.JInternalFrame {
             } else {
                 aviso("No se pudo actualizar la clase.", null);
             }
+        } catch (ReglaNegocioException ex) {
+            aviso(ex.getMessage(), null);
         } catch (SQLException ex) {
             error("No se pudo actualizar la clase.", ex);
         }
@@ -355,21 +360,20 @@ public class VistaClaseGym extends javax.swing.JInternalFrame {
             aviso("Seleccione una clase de la tabla.", null);
             return;
         }
-        if (!confirmar("¿Eliminar esta clase?\nEsta acción no se puede deshacer.",
-                "Confirmar eliminación")) {
+        if (!confirmar("¿Dar de baja esta clase?\nQuedará inactiva y no admitirá nuevas inscripciones.\n"
+                + "(Se puede reactivar desde Actualizar, marcándola como activa.)", "Confirmar baja")) {
             return;
         }
         try {
-            if (claseData.borrar(claseCargada.getIdClase())) {
-                info("Clase eliminada.");
+            if (claseData.bajaLogica(claseCargada.getIdClase())) {
+                info("Clase dada de baja.");
                 limpiar();
                 cargarTabla();
             } else {
-                aviso("No se pudo eliminar la clase.\n"
-                        + "Puede tener asistencias asociadas.", null);
+                aviso("No se pudo dar de baja la clase.", null);
             }
         } catch (SQLException ex) {
-            error("No se pudo eliminar la clase.", ex);
+            error("No se pudo dar de baja la clase.", ex);
         }
     }//GEN-LAST:event_btnEliminarActionPerformed
 

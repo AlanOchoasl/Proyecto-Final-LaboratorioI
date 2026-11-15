@@ -22,7 +22,7 @@ public class ProyectoFinalLaboratorioI {
             nuevoSocio.setApellido("Tevez");
             nuevoSocio.setEdad(29);
             nuevoSocio.setCorreo("carlos.tevez4@gmail.com");
-            nuevoSocio.setTelefono(44323355);
+            nuevoSocio.setTelefono("44323355");
             nuevoSocio.setEstado(true);
 
             Socio existente= socioData.buscarPorDni(nuevoSocio.getDni());
@@ -65,7 +65,7 @@ public class ProyectoFinalLaboratorioI {
             socioModificar.setApellido("Lopez");
             socioModificar.setEdad(28);
             socioModificar.setCorreo("martinalopez23@gmail.com");
-            socioModificar.setTelefono(32456741);
+            socioModificar.setTelefono("32456741");
             
             boolean actualizado = socioData.actualizar(socioModificar);
             System.out.println(actualizado ? "Socio actualizado con exito" : "No se encontro el socio");
