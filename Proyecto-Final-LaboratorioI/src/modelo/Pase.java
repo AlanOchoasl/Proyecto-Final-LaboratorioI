@@ -3,32 +3,36 @@ package modelo;
 import java.time.LocalDate;
 
 public class Pase {
+
     private int idPase;
     private Socio socio;
     private int cantEntrada;
-    private LocalDate fechaOut;
-    private LocalDate fechaIn;
+    private LocalDate fechaInicio;
+    private LocalDate fechaFin;
     private double costo;
     private boolean estado;
+
+    public static final int DIAS_VALIDEZ = 30;
+    public static final int[] PAQUETES_ENTRADAS = {8, 12, 20};
 
     public Pase() {
     }
 
-    public Pase(Socio socio, int cantEntrada, LocalDate fechaOut, LocalDate fechaIn, double costo, boolean estado) {
+    public Pase(Socio socio, int cantEntrada, LocalDate fechaInicio, LocalDate fechaFin, double costo, boolean estado) {
         this.socio = socio;
         this.cantEntrada = cantEntrada;
-        this.fechaOut = fechaOut;
-        this.fechaIn = fechaIn;
+        this.fechaInicio = fechaInicio;
+        this.fechaFin = fechaFin;
         this.costo = costo;
         this.estado = estado;
     }
 
-    public Pase(int idPase, Socio socio, int cantEntrada, LocalDate fechaOut, LocalDate fechaIn, double costo, boolean estado) {
+    public Pase(int idPase, Socio socio, int cantEntrada, LocalDate fechaInicio, LocalDate fechaFin, double costo, boolean estado) {
         this.idPase = idPase;
         this.socio = socio;
         this.cantEntrada = cantEntrada;
-        this.fechaOut = fechaOut;
-        this.fechaIn = fechaIn;
+        this.fechaInicio = fechaInicio;
+        this.fechaFin = fechaFin;
         this.costo = costo;
         this.estado = estado;
     }
@@ -57,20 +61,20 @@ public class Pase {
         this.cantEntrada = cantEntrada;
     }
 
-    public LocalDate getFechaOut() {
-        return fechaOut;
+    public LocalDate getFechaInicio() {
+        return fechaInicio;
     }
 
-    public void setFechaOut(LocalDate fechaOut) {
-        this.fechaOut = fechaOut;
+    public void setFechaInicio(LocalDate fechaInicio) {
+        this.fechaInicio = fechaInicio;
     }
 
-    public LocalDate getFechaIn() {
-        return fechaIn;
+    public LocalDate getFechaFin() {
+        return fechaFin;
     }
 
-    public void setFechaIn(LocalDate fechaIn) {
-        this.fechaIn = fechaIn;
+    public void setFechaFin(LocalDate fechaFin) {
+        this.fechaFin = fechaFin;
     }
 
     public double getCosto() {
@@ -89,11 +93,25 @@ public class Pase {
         this.estado = estado;
     }
 
+    public boolean estaVigente(java.time.LocalDate dia) {
+        return estado
+                && cantEntrada > 0
+                && !dia.isBefore(fechaInicio)
+                && !dia.isAfter(fechaFin);
+    }
+
+    public static boolean esPaqueteValido(int entradas) {
+        for (int paquete : PAQUETES_ENTRADAS) {
+            if (paquete == entradas) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public String toString() {
-        return "Pase{" + "idPase=" + idPase + ", socio=" + socio + ", cantEntrada=" + cantEntrada + ", fechaOut=" + fechaOut + ", fechaIn=" + fechaIn + ", costo=" + costo + ", estado=" + estado + '}';
+        return "Pase{" + "idPase=" + idPase + ", socio=" + socio + ", cantEntrada=" + cantEntrada + ", fechaInicio=" + fechaInicio + ", fechaFin=" + fechaFin + ", costo=" + costo + ", estado=" + estado + '}';
     }
-    
-    
-    
+
 }

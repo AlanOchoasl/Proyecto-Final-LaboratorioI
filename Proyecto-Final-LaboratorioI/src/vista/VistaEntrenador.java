@@ -10,6 +10,7 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import modelo.Entrenador;
+import modelo.ReglaNegocioException;
 import persistencia.EntrenadorData;
 
 
@@ -69,6 +70,7 @@ public class VistaEntrenador extends javax.swing.JInternalFrame {
         setMaximizable(true);
         setResizable(true);
         setTitle("Entrenadores");
+        setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
 
         lblTitulo.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         lblTitulo.setText("Entrenadores de AboriGym");
@@ -114,7 +116,7 @@ public class VistaEntrenador extends javax.swing.JInternalFrame {
         btnActualizar.setText("Actualizar");
         btnActualizar.addActionListener(this::btnActualizarActionPerformed);
 
-        btnEliminar.setText("Eliminar");
+        btnEliminar.setText("Dar baja");
         btnEliminar.addActionListener(this::btnEliminarActionPerformed);
 
         lblFiltro.setText("Mostrar:");
@@ -315,6 +317,8 @@ public class VistaEntrenador extends javax.swing.JInternalFrame {
             } else {
                 aviso("No se pudo actualizar el entrenador.", null);
             }
+        } catch (ReglaNegocioException ex) {
+            aviso(ex.getMessage(), null);
         } catch (SQLException ex) {
             error("No se pudo actualizar el entrenador.", ex);
         }
@@ -324,22 +328,23 @@ public class VistaEntrenador extends javax.swing.JInternalFrame {
         if (entrenadorCargado == null) {
             return;
         }
-        if (!confirmar("¿Eliminar definitivamente a " + entrenadorCargado.getNombre() + " "
-                + entrenadorCargado.getApellido() + "?\nEsta acción no se puede deshacer.\n"
-                + "(Cuidado)", "Confirmar eliminación")) {
+        if (!confirmar("¿Dar de baja a " + entrenadorCargado.getNombre() + " "
+                + entrenadorCargado.getApellido() + "?\nQuedará inactivo y no se lo podrá asignar a clases.\n"
+                + "(Se puede reactivar desde Actualizar, marcándolo como activo.)", "Confirmar baja")) {
             return;
         }
         try {
-            if (entrenadorData.borrar(entrenadorCargado.getIdEntrenador())) {
-                info("Entrenador eliminado.");
+            if (entrenadorData.bajaLogica(entrenadorCargado.getIdEntrenador())) {
+                info("Entrenador dado de baja.");
                 limpiar();
                 cargarTabla();
             } else {
-                aviso("No se pudo eliminar. Es probable que el entrenador tenga clases asignadas. "
-                        , null);
+                aviso("No se pudo dar de baja al entrenador.", null);
             }
+        } catch (ReglaNegocioException ex) {
+            aviso(ex.getMessage(), null);
         } catch (SQLException ex) {
-            error("No se pudo eliminar el entrenador.", ex);
+            error("No se pudo dar de baja al entrenador.", ex);
         }
     }//GEN-LAST:event_btnEliminarActionPerformed
 

@@ -4,6 +4,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import modelo.Entrenador;
+import modelo.ReglaNegocioException;
 
 public class EntrenadorData {
 
@@ -83,7 +84,10 @@ public class EntrenadorData {
         return entrenadores;
     }
 
-    public boolean actualizar(Entrenador entrenador) throws SQLException {
+    public boolean actualizar(Entrenador entrenador) throws SQLException, ReglaNegocioException {
+        if (!entrenador.isEstado()) {
+            validarSinClasesActivas(entrenador.getIdEntrenador());
+        }
         String sql = "UPDATE entrenador SET Dni = ?, Nombre = ?, Apellido = ?, Especialidad = ?, Estado = ? WHERE id_Entrenador = ?";
         try (PreparedStatement ps = cn.prepareStatement(sql)) {
             ps.setString(1, String.valueOf(entrenador.getDni()));
@@ -96,8 +100,24 @@ public class EntrenadorData {
         }
     }
 
-    public boolean bajaLogica(int idEntrenador) throws SQLException {
+    public boolean bajaLogica(int idEntrenador) throws SQLException, ReglaNegocioException {
+        validarSinClasesActivas(idEntrenador);
         return cambiarEstado(idEntrenador, false);
+    }
+    
+    private void validarSinClasesActivas(int idEntrenador) throws SQLException, ReglaNegocioException {
+        String sql = "SELECT COUNT(*) FROM clasegym WHERE id_Entrenador = ? AND Estado = 1";
+        try (PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setInt(1, idEntrenador);
+            try (ResultSet rs = ps.executeQuery()) {
+                rs.next();
+                int cantidad = rs.getInt(1);
+                if (cantidad > 0) {
+                    throw new ReglaNegocioException("El entrenador tiene " + cantidad
+                            + " clase(s) activa(s). Reasígnelas o désélas de baja antes de dar de baja al entrenador.");
+                }
+            }
+        }
     }
 
     public boolean altaLogica(int idEntrenador) throws SQLException {

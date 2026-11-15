@@ -1,10 +1,12 @@
 package persistencia;
 
 import java.sql.*;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import modelo.ClaseGym;
 import modelo.Entrenador;
+import modelo.ReglaNegocioException;
 
 public class ClaseGymData {
 
@@ -14,10 +16,11 @@ public class ClaseGymData {
         this.cn = cn;
     }
 
-    public boolean alta(ClaseGym clase) throws SQLException {
+    public boolean alta(ClaseGym clase) throws SQLException, ReglaNegocioException {
         if (clase.getEntrenador() == null || clase.getEntrenador().getIdEntrenador() <= 0) {
             throw new IllegalArgumentException("La clase debe tener un entrenador con id valido.");
         }
+        validar(clase, 0);
         String sql = "INSERT INTO clasegym (Disciplina, id_Entrenador, Horario, Capacidad, Estado) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, clase.getDisciplina());
@@ -77,10 +80,11 @@ public class ClaseGymData {
         return clases;
     }
 
-    public boolean actualizar(ClaseGym clase) throws SQLException {
+    public boolean actualizar(ClaseGym clase) throws SQLException, ReglaNegocioException {
         if (clase.getEntrenador() == null || clase.getEntrenador().getIdEntrenador() <= 0) {
             throw new IllegalArgumentException("La clase debe tener un entrenador con id valido.");
         }
+        validar(clase, clase.getIdClase());
         String sql = "UPDATE clasegym SET Disciplina = ?, id_Entrenador = ?, Horario = ?, Capacidad = ?, Estado = ? WHERE id_Clase = ?";
         try (PreparedStatement ps = cn.prepareStatement(sql)) {
             ps.setString(1, clase.getDisciplina());
@@ -97,7 +101,13 @@ public class ClaseGymData {
         return cambiarEstado(idClase, false);
     }
 
-    public boolean altaLogica(int idClase) throws SQLException {
+    public boolean altaLogica(int idClase) throws SQLException, ReglaNegocioException {
+        ClaseGym clase = buscar(idClase);
+        if (clase == null) {
+            return false;
+        }
+        clase.setEstado(true);
+        validar(clase, idClase);
         return cambiarEstado(idClase, true);
     }
 
@@ -121,6 +131,63 @@ public class ClaseGymData {
             }
             throw e;
         }
+    }
+    
+     private void validar(ClaseGym clase, int excluirId) throws SQLException, ReglaNegocioException {
+        if (clase.getDisciplina() == null || clase.getDisciplina().trim().isEmpty()) {
+            throw new ReglaNegocioException("La disciplina es obligatoria.");
+        }
+        if (clase.getHorario() == null) {
+            throw new ReglaNegocioException("El horario es obligatorio.");
+        }
+        if (clase.getCapacidad() <= 0) {
+            throw new ReglaNegocioException("La capacidad debe ser mayor que cero.");
+        }
+
+        String especialidad = null;
+        boolean entrenadorActivo = false;
+        String sqlEntrenador = "SELECT Especialidad, Estado FROM entrenador WHERE id_Entrenador = ?";
+        try (PreparedStatement ps = cn.prepareStatement(sqlEntrenador)) {
+            ps.setInt(1, clase.getEntrenador().getIdEntrenador());
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    throw new ReglaNegocioException("El entrenador seleccionado no existe.");
+                }
+                especialidad = rs.getString("Especialidad");
+                entrenadorActivo = rs.getBoolean("Estado");
+            }
+        }
+        if (!entrenadorActivo) {
+            throw new ReglaNegocioException("El entrenador está dado de baja. Elija un entrenador activo.");
+        }
+        if (!normalizar(especialidad).equals(normalizar(clase.getDisciplina()))) {
+            throw new ReglaNegocioException("La especialidad del entrenador (" + especialidad
+                    + ") no coincide con la disciplina de la clase (" + clase.getDisciplina().trim() + ").");
+        }
+
+        if (clase.isEstado()) {
+            // Superpuesta = otra clase activa del mismo entrenador que empieza a menos de 1 hora de distancia.
+            String sqlSuperpuesta = "SELECT COUNT(*) FROM clasegym WHERE id_Entrenador = ? AND Estado = 1 "
+                    + "AND id_Clase <> ? AND ABS(TIME_TO_SEC(TIMEDIFF(Horario, ?))) < 3600";
+            try (PreparedStatement ps = cn.prepareStatement(sqlSuperpuesta)) {
+                ps.setInt(1, clase.getEntrenador().getIdEntrenador());
+                ps.setInt(2, excluirId);
+                ps.setTime(3, Time.valueOf(clase.getHorario()));
+                try (ResultSet rs = ps.executeQuery()) {
+                    rs.next();
+                    if (rs.getInt(1) > 0) {
+                        throw new ReglaNegocioException(
+                                "El entrenador ya tiene otra clase en ese horario (cada clase dura 1 hora).");
+                    }
+                }
+            }
+        }
+    }
+     
+     private static String normalizar(String texto) {
+        String sinTildes = Normalizer.normalize(texto == null ? "" : texto, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "");
+        return sinTildes.trim().toLowerCase();
     }
 
     private String selectBase() {

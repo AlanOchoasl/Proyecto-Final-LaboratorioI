@@ -138,7 +138,7 @@ public class SocioData {
         socio.setApellido(rs.getString("Apellido"));
         socio.setEdad(rs.getInt("Edad"));
         socio.setCorreo(rs.getString("Correo"));
-        socio.setTelefono(rs.getInt("telefono"));
+        socio.setTelefono(rs.getString("telefono"));
         socio.setEstado(rs.getBoolean("Estado"));
         return socio;
     }

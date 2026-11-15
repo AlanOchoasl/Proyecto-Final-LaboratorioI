@@ -12,6 +12,7 @@ import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import modelo.ReglaNegocioException;
 import modelo.Asistencia;
 import modelo.ClaseGym;
 import modelo.Socio;
@@ -118,7 +119,7 @@ public class VistaAsistencia extends javax.swing.JInternalFrame {
 
         btnAsistencia.setText("Registrar Asistencia");
 
-        btnEliminar.setText("Eliminar");
+        btnEliminar.setText("Anular");
 
         btnNuevo.setText("Nuevo");
 
@@ -168,15 +169,12 @@ public class VistaAsistencia extends javax.swing.JInternalFrame {
                         .addGap(88, 88, 88)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblTitulo)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addComponent(cmbClaseGym, javax.swing.GroupLayout.Alignment.LEADING, 0, 104, Short.MAX_VALUE)
-                                        .addComponent(cmbSocio, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addComponent(txtFecha, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 116, Short.MAX_VALUE)
-                                        .addComponent(txtId, javax.swing.GroupLayout.Alignment.LEADING)))
-                                .addGap(0, 177, Short.MAX_VALUE))))
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(cmbClaseGym, javax.swing.GroupLayout.Alignment.LEADING, 0, 104, Short.MAX_VALUE)
+                                .addComponent(cmbSocio, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(txtFecha, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 116, Short.MAX_VALUE)
+                                .addComponent(txtId, javax.swing.GroupLayout.Alignment.LEADING))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(12, 12, 12)
                         .addComponent(btnNuevo, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -186,6 +184,7 @@ public class VistaAsistencia extends javax.swing.JInternalFrame {
                         .addComponent(btnModificar, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(btnEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(0, 9, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(27, 27, 27)
@@ -399,20 +398,6 @@ public class VistaAsistencia extends javax.swing.JInternalFrame {
         return new Asistencia(sociosCombo.get(iSocio), clasesCombo.get(iClase), fecha);
     }
 
-    private boolean existeDuplicado(Asistencia nueva, int idExcluir) throws SQLException {
-        for (Asistencia a : asistenciaData.listar()) {
-            if (a.getIdAsistencia() == idExcluir) {
-                continue;
-            }
-            if (a.getSocio().getIdSocio() == nueva.getSocio().getIdSocio()
-                    && a.getClase().getIdClase() == nueva.getClase().getIdClase()
-                    && a.getFecha().equals(nueva.getFecha())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {
         limpiar();
     }
@@ -423,18 +408,13 @@ public class VistaAsistencia extends javax.swing.JInternalFrame {
             return;
         }
         try {
-            if (existeDuplicado(nueva, 0)) {
-                aviso("Ya existe una asistencia para ese socio, clase y fecha.", cmbSocio);
-                return;
-            }
-            if (asistenciaData.alta(nueva)) {
-                info("Asistencia registrada correctamente. ID asignado: "
-                        + nueva.getIdAsistencia());
-                limpiar();
-                cargarTabla();
-            } else {
-                aviso("No se pudo registrar la asistencia.", null);
-            }
+            int restantes = asistenciaData.alta(nueva);
+            info("Asistencia registrada correctamente.\nID asignado: " + nueva.getIdAsistencia()
+                    + "\nEntradas restantes del pase: " + restantes);
+            limpiar();
+            cargarTabla();
+        } catch (ReglaNegocioException ex) {
+            aviso(ex.getMessage(), null);
         } catch (SQLException ex) {
             error("No se pudo registrar la asistencia.", ex);
         }
@@ -453,17 +433,12 @@ public class VistaAsistencia extends javax.swing.JInternalFrame {
         modificada.setIdAsistencia(asistenciaCargada.getIdAsistencia());
 
         try {
-            if (existeDuplicado(modificada, modificada.getIdAsistencia())) {
-                aviso("Ya existe otra asistencia para ese socio, clase y fecha.", cmbSocio);
-                return;
-            }
-            if (asistenciaData.actualizar(modificada)) {
-                info("Asistencia actualizada correctamente.");
-                limpiar();
-                cargarTabla();
-            } else {
-                aviso("No se pudo actualizar la asistencia.", null);
-            }
+            int restantes = asistenciaData.actualizar(modificada);  
+            info("Asistencia actualizada correctamente.\nEntradas restantes del pase: " + restantes);
+            limpiar();
+            cargarTabla();
+        } catch (ReglaNegocioException ex) {
+            aviso(ex.getMessage(), null);
         } catch (SQLException ex) {
             error("No se pudo actualizar la asistencia.", ex);
         }
@@ -473,17 +448,17 @@ public class VistaAsistencia extends javax.swing.JInternalFrame {
         if (asistenciaCargada == null) {
             return;
         }
-        if (!confirmar("¿Eliminar esta asistencia?\nEsta acción no se puede deshacer.",
-                "Confirmar eliminación")) {
+        if (!confirmar("¿Anular esta asistencia?\nSe le devolverá la entrada al pase del socio.",
+                "Confirmar anulación")) {
             return;
         }
         try {
-            if (asistenciaData.borrar(asistenciaCargada.getIdAsistencia())) {
-                info("Asistencia eliminada.");
+            if (asistenciaData.anular(asistenciaCargada.getIdAsistencia())) {
+                info("Asistencia anulada. La entrada fue devuelta al pase.");
                 limpiar();
                 cargarTabla();
             } else {
-                aviso("No se pudo eliminar la asistencia.", null);
+                aviso("No se pudo anular la asistencia.", null);
             }
         } catch (SQLException ex) {
             error("No se pudo eliminar la asistencia.", ex);

@@ -7,13 +7,13 @@ public class Socio {
     private int dni;
     private int edad;
     private String correo;
-    private int telefono;
+    private String telefono;
     private boolean estado;
 
     public Socio() {
     }
 
-    public Socio(String nombre, String apellido, int dni, int edad, String correo, int telefono, boolean estado) {
+    public Socio(String nombre, String apellido, int dni, int edad, String correo, String telefono, boolean estado) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.dni = dni;
@@ -23,7 +23,7 @@ public class Socio {
         this.estado = estado;
     }
 
-    public Socio(int idSocio, String nombre, String apellido, int dni, int edad, String correo, int telefono, boolean estado) {
+    public Socio(int idSocio, String nombre, String apellido, int dni, int edad, String correo, String telefono, boolean estado) {
         this.idSocio = idSocio;
         this.nombre = nombre;
         this.apellido = apellido;
@@ -82,11 +82,11 @@ public class Socio {
         this.correo = correo;
     }
 
-    public int getTelefono() {
+    public String getTelefono() {
         return telefono;
     }
 
-    public void setTelefono(int telefono) {
+    public void setTelefono(String telefono) {
         this.telefono = telefono;
     }
 

@@ -129,7 +129,7 @@ public class VistaSocio extends javax.swing.JInternalFrame {
         btnActualizar.setText("Actualizar");
         btnActualizar.addActionListener(this::btnActualizarActionPerformed);
 
-        btnEliminar.setText("Eliminar");
+        btnEliminar.setText("Dar baja");
         btnEliminar.addActionListener(this::btnEliminarActionPerformed);
 
         btnNuevo.setText("Nuevo");
@@ -367,26 +367,24 @@ public class VistaSocio extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnActualizarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-        // TODO add your handling code here:
         if (socioCargado == null) {
             return;
         }
-        if (!confirmar("¿Eliminar definitivamente a " + socioCargado.getNombre() + " "
-                + socioCargado.getApellido() + "?\nEsta acción no se puede deshacer.\n"
-                + "(Cuidado)", "Confirmar eliminación")) {
+        if (!confirmar("¿Dar de baja a " + socioCargado.getNombre() + " "
+                + socioCargado.getApellido() + "?\nQuedará inactivo y no podrá anotarse a clases.\n"
+                + "(Se puede reactivar desde Actualizar, marcándolo como activo.)", "Confirmar baja")) {
             return;
         }
         try {
-            if (socioData.borrar(socioCargado.getIdSocio())) {
-                info("Socio eliminado.");
+            if (socioData.bajaLogica(socioCargado.getIdSocio())) {
+                info("Socio dado de baja.");
                 limpiar();
                 cargarTabla();
             } else {
-                aviso("No se pudo eliminar. Es probable que el socio tenga pases o asistencias "
-                        + "registradas.", null);
+                aviso("No se pudo dar de baja al socio.", null);
             }
         } catch (SQLException ex) {
-            error("No se pudo eliminar el socio.", ex);
+            error("No se pudo dar de baja al socio.", ex);
         }
     }//GEN-LAST:event_btnEliminarActionPerformed
 
@@ -506,11 +504,11 @@ public class VistaSocio extends javax.swing.JInternalFrame {
         }
 
         String telTxt = txtTelefono.getText().trim();
-        if (!telTxt.matches("\\d{6,9}")) {
-            aviso("El teléfono debe tener entre 6 y 9 números, sin espacios ni guiones.", txtTelefono);
+        if (!telTxt.matches("\\d{6,15}")) {
+            aviso("El teléfono debe tener entre 6 y 15 números, sin espacios ni guiones.", txtTelefono);
             return null;
         }
-        int telefono = Integer.parseInt(telTxt);
+        String telefono = telTxt;
 
         return new Socio(nombre, apellido, dni, edad, correo, telefono, rbActivo.isSelected());
     }

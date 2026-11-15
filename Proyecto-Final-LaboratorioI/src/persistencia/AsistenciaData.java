@@ -1,43 +1,84 @@
 package persistencia;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import modelo.Asistencia;
 import modelo.ClaseGym;
 import modelo.Entrenador;
 import modelo.Socio;
+import modelo.Pase;
+import modelo.ReglaNegocioException;
 
 public class AsistenciaData {
 
     private final Connection cn;
+    private final PaseData paseData;
 
     public AsistenciaData(Connection cn) {
         this.cn = cn;
+        this.paseData = new PaseData(cn);
     }
 
-    public boolean alta(Asistencia asistencia) throws SQLException {
-        if (asistencia.getSocio() == null || asistencia.getSocio().getIdSocio() <= 0) {
-            throw new IllegalArgumentException("La asistencia debe tener un socio con id valido.");
-        }
-        if (asistencia.getClase() == null || asistencia.getClase().getIdClase() <= 0) {
-            throw new IllegalArgumentException("La asistencia debe tener una clase con id valido.");
-        }
-        String sql = "INSERT INTO asistencia (id_Socio, id_Clase, fecha_Asistencia) VALUES (?, ?, ?)";
-        try (PreparedStatement ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setInt(1, asistencia.getSocio().getIdSocio());
-            ps.setInt(2, asistencia.getClase().getIdClase());
-            ps.setDate(3, Date.valueOf(asistencia.getFecha()));
+    public int alta(Asistencia asistencia) throws SQLException, ReglaNegocioException {
+        validarDatosBasicos(asistencia);
 
-            if (ps.executeUpdate() == 0) {
-                return false;
+        int idSocio = asistencia.getSocio().getIdSocio();
+        int idClase = asistencia.getClase().getIdClase();
+        LocalDate dia = asistencia.getFecha();
+
+        boolean autoCommitOriginal = cn.getAutoCommit();
+        cn.setAutoCommit(false);
+        try {
+            if (!socioActivo(idSocio)) {
+                throw new ReglaNegocioException("El socio no existe o está dado de baja.");
             }
-            try (ResultSet rs = ps.getGeneratedKeys()) {
-                if (rs.next()) {
-                    asistencia.setIdAsistencia(rs.getInt(1));
+
+            int capacidad = verificarYBloquearClase(idClase);
+
+            if (contarAsistencias(idSocio, idClase, dia, 0) > 0) {
+                throw new ReglaNegocioException("El socio ya está anotado a esta clase en esa fecha.");
+            }
+
+            int inscriptos = contarAsistenciasClase(idClase, dia, 0);
+            if (inscriptos >= capacidad) {
+                throw new ReglaNegocioException("No hay cupo disponible en la clase para esa fecha ("
+                        + inscriptos + " de " + capacidad + " lugares ocupados).");
+            }
+
+            Pase pase = paseData.buscarVigente(idSocio, dia);
+            if (pase == null) {
+                throw new ReglaNegocioException(
+                        "El socio no tiene un pase vigente para esa fecha (no tiene pase, está vencido o se quedó sin entradas).");
+            }
+
+            String sql = "INSERT INTO asistencia (id_Socio, id_Clase, fecha_Asistencia) VALUES (?, ?, ?)";
+            try (PreparedStatement ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                ps.setInt(1, idSocio);
+                ps.setInt(2, idClase);
+                ps.setDate(3, Date.valueOf(dia));
+                ps.executeUpdate();
+                
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        asistencia.setIdAsistencia(rs.getInt(1));
+                    }
                 }
             }
-            return true;
+
+            if (!paseData.descontarEntrada(pase.getIdPase())) {
+                throw new ReglaNegocioException("No se pudo descontar la entrada del pase.");
+            }
+
+            cn.commit();
+            return pase.getCantEntrada() - 1;
+
+        } catch (SQLException | ReglaNegocioException | RuntimeException e) {
+            cn.rollback();
+            throw e;
+        } finally {
+            cn.setAutoCommit(autoCommitOriginal);
         }
     }
 
@@ -63,33 +104,170 @@ public class AsistenciaData {
         return asistencias;
     }
 
-    public boolean actualizar(Asistencia asistencia) throws SQLException {
+    public int actualizar(Asistencia asistencia) throws SQLException, ReglaNegocioException {
+        validarDatosBasicos(asistencia);
+        if (asistencia.getIdAsistencia() <= 0) {
+            throw new IllegalArgumentException("La asistencia debe tener un ID válido para actualizar.");
+        }
+
+        int idSocio = asistencia.getSocio().getIdSocio();
+        int idClase = asistencia.getClase().getIdClase();
+        LocalDate dia = asistencia.getFecha();
+        int idAsistenciaActual = asistencia.getIdAsistencia();
+
+        boolean autoCommitOriginal = cn.getAutoCommit();
+        cn.setAutoCommit(false);
+        try {
+            // 1. Devolver la entrada de la asistencia anterior
+            Asistencia anterior = buscar(idAsistenciaActual);
+            if (anterior == null) {
+                throw new ReglaNegocioException("La asistencia a modificar ya no existe.");
+            }
+            paseData.devolverEntrada(anterior.getSocio().getIdSocio(), anterior.getFecha());
+
+            if (!socioActivo(idSocio)) {
+                throw new ReglaNegocioException("El socio no existe o está dado de baja.");
+            }
+
+            int capacidad = verificarYBloquearClase(idClase);
+
+            // Se excluye la propia asistencia al contar para permitir modificar la misma fecha/clase sin conflicto falso
+            if (contarAsistencias(idSocio, idClase, dia, idAsistenciaActual) > 0) {
+                throw new ReglaNegocioException("El socio ya está anotado a esta clase en esa fecha.");
+            }
+
+            int inscriptos = contarAsistenciasClase(idClase, dia, idAsistenciaActual);
+            if (inscriptos >= capacidad) {
+                throw new ReglaNegocioException("No hay cupo disponible en la clase para esa fecha ("
+                        + inscriptos + " de " + capacidad + " lugares ocupados).");
+            }
+
+            Pase pase = paseData.buscarVigente(idSocio, dia);
+            if (pase == null) {
+                throw new ReglaNegocioException(
+                        "El socio no tiene un pase vigente para esa fecha (no tiene pase, está vencido o se quedó sin entradas).");
+            }
+
+            // 2. Actualizar el registro en la base de datos
+            String sql = "UPDATE asistencia SET id_Socio = ?, id_Clase = ?, fecha_Asistencia = ? WHERE id_Asistencia = ?";
+            try (PreparedStatement ps = cn.prepareStatement(sql)) {
+                ps.setInt(1, idSocio);
+                ps.setInt(2, idClase);
+                ps.setDate(3, Date.valueOf(dia));
+                ps.setInt(4, idAsistenciaActual);
+                ps.executeUpdate();
+            }
+
+            // 3. Descontar la entrada del nuevo pase
+            if (!paseData.descontarEntrada(pase.getIdPase())) {
+                throw new ReglaNegocioException("No se pudo descontar la entrada del pase.");
+            }
+
+            cn.commit();
+            return pase.getCantEntrada() - 1;
+
+        } catch (SQLException | ReglaNegocioException | RuntimeException e) {
+            cn.rollback();
+            throw e;
+        } finally {
+            cn.setAutoCommit(autoCommitOriginal);
+        }
+    }
+    
+    public boolean anular(int idAsistencia) throws SQLException {
+        boolean autoCommitOriginal = cn.getAutoCommit();
+        cn.setAutoCommit(false);
+        try {
+            Asistencia a = buscar(idAsistencia);
+            if (a == null) {
+                cn.rollback();
+                return false;
+            }
+            String sql = "DELETE FROM asistencia WHERE id_Asistencia = ?";
+            try (PreparedStatement ps = cn.prepareStatement(sql)) {
+                ps.setInt(1, idAsistencia);
+                ps.executeUpdate();
+            }
+            paseData.devolverEntrada(a.getSocio().getIdSocio(), a.getFecha());
+            cn.commit();
+            return true;
+        } catch (SQLException | RuntimeException e) {
+            cn.rollback();
+            throw e;
+        } finally {
+            cn.setAutoCommit(autoCommitOriginal);
+        }
+    }
+    
+    private void validarDatosBasicos(Asistencia asistencia) throws ReglaNegocioException {
+        if (asistencia == null) {
+            throw new IllegalArgumentException("La asistencia no puede ser nula.");
+        }
         if (asistencia.getSocio() == null || asistencia.getSocio().getIdSocio() <= 0) {
             throw new IllegalArgumentException("La asistencia debe tener un socio con id valido.");
         }
         if (asistencia.getClase() == null || asistencia.getClase().getIdClase() <= 0) {
             throw new IllegalArgumentException("La asistencia debe tener una clase con id valido.");
         }
-        String sql = "UPDATE asistencia SET id_Socio = ?, id_Clase = ?, fecha_Asistencia = ? WHERE id_Asistencia = ?";
-        try (PreparedStatement ps = cn.prepareStatement(sql)) {
-            ps.setInt(1, asistencia.getSocio().getIdSocio());
-            ps.setInt(2, asistencia.getClase().getIdClase());
-            ps.setDate(3, Date.valueOf(asistencia.getFecha()));
-            ps.setInt(4, asistencia.getIdAsistencia());
-            return ps.executeUpdate() > 0;
+        if (asistencia.getFecha() == null) {
+            throw new ReglaNegocioException("La fecha es obligatoria.");
         }
     }
-
-    public boolean borrar(int idAsistencia) throws SQLException {
-        String sql = "DELETE FROM asistencia WHERE id_Asistencia = ?";
+    
+    private boolean socioActivo(int idSocio) throws SQLException {
+        String sql = "SELECT Estado FROM socio WHERE id_Socio = ?";
         try (PreparedStatement ps = cn.prepareStatement(sql)) {
-            ps.setInt(1, idAsistencia);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            if (e.getSQLState() != null && e.getSQLState().startsWith("23")) {
-                return false;
+            ps.setInt(1, idSocio);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() && rs.getBoolean(1);
             }
-            throw e;
+        }
+    }
+    
+    private int verificarYBloquearClase(int idClase) throws SQLException, ReglaNegocioException {
+        String sqlClase = "SELECT Capacidad, Estado FROM clasegym WHERE id_Clase = ? FOR UPDATE";
+        try (PreparedStatement ps = cn.prepareStatement(sqlClase)) {
+            ps.setInt(1, idClase);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    throw new ReglaNegocioException("La clase no existe.");
+                }
+                if (!rs.getBoolean("Estado")) {
+                    throw new ReglaNegocioException("La clase está dada de baja.");
+                }
+                return rs.getInt("Capacidad");
+            }
+        }
+    }
+    
+    private int contarAsistencias(int idSocio, int idClase, LocalDate dia, int excluirId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM asistencia WHERE id_Socio = ? AND id_Clase = ? AND fecha_Asistencia = ? AND id_Asistencia <> ?";
+        try (PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setInt(1, idSocio);
+            ps.setInt(2, idClase);
+            ps.setDate(3, Date.valueOf(dia));
+            ps.setInt(4, excluirId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+                return 0;
+            }
+        }
+    }
+    
+    private int contarAsistenciasClase(int idClase, LocalDate dia, int excluirId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM asistencia WHERE id_Clase = ? AND fecha_Asistencia = ? AND id_Asistencia <> ?";
+        try (PreparedStatement ps = cn.prepareStatement(sql)) {;
+            ps.setInt(1, idClase);
+            ps.setDate(2, Date.valueOf(dia));
+            ps.setInt(3, excluirId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+                return 0;
+            }
         }
     }
 
@@ -132,7 +310,7 @@ public class AsistenciaData {
         socio.setApellido(rs.getString("SocioApellido"));
         socio.setEdad(rs.getInt("SocioEdad"));
         socio.setCorreo(rs.getString("SocioCorreo"));
-        socio.setTelefono(rs.getInt("SocioTelefono"));
+        socio.setTelefono(rs.getString("SocioTelefono"));
         socio.setEstado(rs.getBoolean("SocioEstado"));
 
         Asistencia asistencia = new Asistencia();
