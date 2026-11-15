@@ -35,9 +35,10 @@ public class Ventanaprincipal extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jMenu2 = new javax.swing.JMenu();
         jDesktopPane1 = new javax.swing.JDesktopPane();
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
+        jMenuAdministracion = new javax.swing.JMenu();
         jMenuClaseGym = new javax.swing.JMenuItem();
         jMenuGestionSocios = new javax.swing.JMenuItem();
         jMenuEntrenadores = new javax.swing.JMenuItem();
@@ -45,42 +46,44 @@ public class Ventanaprincipal extends javax.swing.JFrame {
         jMenuAsistencias = new javax.swing.JMenuItem();
         jMenuSalir = new javax.swing.JMenu();
 
+        jMenu2.setText("jMenu2");
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         javax.swing.GroupLayout jDesktopPane1Layout = new javax.swing.GroupLayout(jDesktopPane1);
         jDesktopPane1.setLayout(jDesktopPane1Layout);
         jDesktopPane1Layout.setHorizontalGroup(
             jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 908, Short.MAX_VALUE)
+            .addGap(0, 1183, Short.MAX_VALUE)
         );
         jDesktopPane1Layout.setVerticalGroup(
             jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 547, Short.MAX_VALUE)
+            .addGap(0, 634, Short.MAX_VALUE)
         );
 
-        jMenu1.setText("Administración");
+        jMenuAdministracion.setText("Administración");
 
         jMenuClaseGym.setText("Gestionar ClaseGym");
         jMenuClaseGym.addActionListener(this::jMenuClaseGymActionPerformed);
-        jMenu1.add(jMenuClaseGym);
+        jMenuAdministracion.add(jMenuClaseGym);
 
         jMenuGestionSocios.setText("Gestionar Socios");
         jMenuGestionSocios.addActionListener(this::jMenuGestionSociosActionPerformed);
-        jMenu1.add(jMenuGestionSocios);
+        jMenuAdministracion.add(jMenuGestionSocios);
 
         jMenuEntrenadores.setText("Gestionar Entrenadores");
         jMenuEntrenadores.addActionListener(this::jMenuEntrenadoresActionPerformed);
-        jMenu1.add(jMenuEntrenadores);
+        jMenuAdministracion.add(jMenuEntrenadores);
 
         jMenuPase.setText("Gestionar Pases");
         jMenuPase.addActionListener(this::jMenuPaseActionPerformed);
-        jMenu1.add(jMenuPase);
+        jMenuAdministracion.add(jMenuPase);
 
         jMenuAsistencias.setText("Gestionar Asistencias");
         jMenuAsistencias.addActionListener(this::jMenuAsistenciasActionPerformed);
-        jMenu1.add(jMenuAsistencias);
+        jMenuAdministracion.add(jMenuAsistencias);
 
-        jMenuBar1.add(jMenu1);
+        jMenuBar1.add(jMenuAdministracion);
 
         jMenuSalir.setText("Salir");
         jMenuSalir.addActionListener(this::jMenuSalirActionPerformed);
@@ -224,13 +227,14 @@ public class Ventanaprincipal extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jMenuAdministracion;
     private javax.swing.JMenuItem jMenuAsistencias;
+    private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuClaseGym;
-    private javax.swing.JMenuItem jMenuPase;
     private javax.swing.JMenuItem jMenuEntrenadores;
     private javax.swing.JMenuItem jMenuGestionSocios;
+    private javax.swing.JMenuItem jMenuPase;
     private javax.swing.JMenu jMenuSalir;
     // End of variables declaration//GEN-END:variables
 }
