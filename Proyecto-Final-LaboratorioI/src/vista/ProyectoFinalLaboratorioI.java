@@ -25,16 +25,17 @@ public class ProyectoFinalLaboratorioI {
             nuevoSocio.setTelefono("44323355");
             nuevoSocio.setEstado(true);
 
-            Socio existente= socioData.buscarPorDni(nuevoSocio.getDni());
-            if(existente==null){
-            boolean exito = socioData.alta(nuevoSocio);
-            if (exito) {
-                System.out.println("¡Socio agregado con exito! ID asignado: " + nuevoSocio.getIdSocio());
-            } else {
-                System.out.println("No se pudo registrar el socio.");
-            }
+            Socio existente = socioData.buscarPorDni(nuevoSocio.getDni());
+            if (existente == null) {
+                boolean exito = socioData.alta(nuevoSocio);
+                if (exito) {
+                    System.out.println("¡Socio agregado con exito! ID asignado: " + nuevoSocio.getIdSocio());
+                } else {
+                    System.out.println("No se pudo registrar el socio.");
+                }
             } else {
                 System.out.println("el socio ya existe (ID " + existente.getIdSocio() + "), se usa el existente ");
+                nuevoSocio = existente;
             }
 
             List<Socio> listaSocios = socioData.listar();
@@ -60,16 +61,18 @@ public class ProyectoFinalLaboratorioI {
             //actualizar
             int idPrueba = nuevoSocio.getIdSocio();
             Socio socioModificar = socioData.buscar(idPrueba);
-            socioModificar.setDni(41236457);
-            socioModificar.setNombre("Martina");
-            socioModificar.setApellido("Lopez");
-            socioModificar.setEdad(28);
-            socioModificar.setCorreo("martinalopez23@gmail.com");
-            socioModificar.setTelefono("32456741");
-            
-            boolean actualizado = socioData.actualizar(socioModificar);
-            System.out.println(actualizado ? "Socio actualizado con exito" : "No se encontro el socio");
-            mostrarSocio(socioData.buscar(idPrueba));
+            if (socioModificar == null) {
+                System.out.println("no se pudo actualizar: no se encontro el socio con ID " + idPrueba);
+            } else {
+                socioModificar.setNombre("Martina");
+                socioModificar.setApellido("Lopez");
+                socioModificar.setEdad(28);
+                socioModificar.setTelefono("32456741");
+
+                boolean actualizado = socioData.actualizar(socioModificar);
+                System.out.println(actualizado ? "Socio actualizado con exito" : "No se encontro el socio");
+                mostrarSocio(socioData.buscar(idPrueba));
+            }
 
         } catch (SQLException e) {
             System.err.println("Error al conectar o consultar la base de datos: " + e.getMessage());
@@ -94,3 +97,4 @@ public class ProyectoFinalLaboratorioI {
 
     }
 }
+
