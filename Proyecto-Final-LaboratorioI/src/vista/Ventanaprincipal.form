@@ -105,6 +105,9 @@
   </Layout>
   <SubComponents>
     <Container class="javax.swing.JDesktopPane" name="jDesktopPane1">
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JDesktopPane(){&#xa;        private java.awt.Image imagen = new javax.swing.ImageIcon(&#xa;            getClass().getResource(&quot;/imagenes/banner.png&quot;)&#xa;        ).getImage();&#xa;&#xa;        @Override&#xa;        protected void paintComponent(java.awt.Graphics g) {&#xa;            super.paintComponent(g);&#xa;            g.drawImage(imagen, 0, 0, getWidth(), getHeight(), this);&#xa;        }&#xa;    }"/>
+      </AuxValues>
 
       <Layout>
         <DimensionLayout dim="0">
