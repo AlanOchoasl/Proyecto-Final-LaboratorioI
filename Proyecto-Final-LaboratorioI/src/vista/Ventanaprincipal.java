@@ -36,7 +36,17 @@ public class Ventanaprincipal extends javax.swing.JFrame {
     private void initComponents() {
 
         jMenu2 = new javax.swing.JMenu();
-        jDesktopPane1 = new javax.swing.JDesktopPane();
+        jDesktopPane1 = new javax.swing.JDesktopPane(){
+            private java.awt.Image imagen = new javax.swing.ImageIcon(
+                getClass().getResource("/imagenes/banner.png")
+            ).getImage();
+
+            @Override
+            protected void paintComponent(java.awt.Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(imagen, 0, 0, getWidth(), getHeight(), this);
+            }
+        };
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenuAdministracion = new javax.swing.JMenu();
         jMenuClaseGym = new javax.swing.JMenuItem();
