@@ -60,8 +60,8 @@
                                   <Component id="txtApellido" alignment="0" min="-2" pref="150" max="-2" attributes="0"/>
                                   <Component id="txtEspecialidad" alignment="0" min="-2" pref="150" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace min="-2" max="-2" attributes="0"/>
-                              <Component id="btnBuscar" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="btnBuscar" min="-2" pref="110" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -82,7 +82,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="cmbFiltro" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="scrollTabla" alignment="0" pref="560" max="32767" attributes="0"/>
+                  <Component id="scrollTabla" alignment="0" pref="491" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -245,6 +245,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnBuscar">
       <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/iconos/buscar.png"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="Buscar"/>
         <Property name="toolTipText" type="java.lang.String" value="Busca por el DNI escrito"/>
       </Properties>
@@ -254,6 +257,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnNuevo">
       <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/iconos/nuevousuario.png"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="Nuevo"/>
       </Properties>
       <Events>
@@ -262,6 +268,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnGuardar">
       <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/iconos/guardar.png"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="Guardar"/>
       </Properties>
       <Events>
@@ -270,6 +279,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnActualizar">
       <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/iconos/actualizar.png"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="Actualizar"/>
       </Properties>
       <Events>
@@ -278,6 +290,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnEliminar">
       <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/iconos/dardebaja.png"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="Dar baja"/>
       </Properties>
       <Events>
