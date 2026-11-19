@@ -20,6 +20,7 @@ public class PaseData {
         if (pase.getSocio() == null || pase.getSocio().getIdSocio() <= 0) {
             throw new IllegalArgumentException("El pase debe tener un socio con id valido.");
         }
+        validar(pase, 0);
         String sql = "INSERT INTO pase (id_Socio, cantidadEntradas, fecha_Inicio, fecha_Fin, costo, Estado) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, pase.getSocio().getIdSocio());
@@ -84,6 +85,7 @@ public class PaseData {
         if (pase.getSocio() == null || pase.getSocio().getIdSocio() <= 0) {
             throw new IllegalArgumentException("El pase debe tener un socio con id valido.");
         }
+        validar(pase, pase.getIdPase());
         String sql = "UPDATE pase SET id_Socio = ?, cantidadEntradas = ?, fecha_Inicio = ?, fecha_Fin = ?, costo = ?, Estado = ? WHERE id_Pase = ?";
         try (PreparedStatement ps = cn.prepareStatement(sql)) {
             ps.setInt(1, pase.getSocio().getIdSocio());
