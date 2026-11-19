@@ -135,7 +135,7 @@ public class VistaSocio extends javax.swing.JInternalFrame {
         btnEliminar.setText("Dar baja");
         btnEliminar.addActionListener(this::btnEliminarActionPerformed);
 
-        btnNuevo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/nuevo.png"))); // NOI18N
+        btnNuevo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/nuevousuario.png"))); // NOI18N
         btnNuevo.setText("Nuevo");
         btnNuevo.addActionListener(this::btnNuevoActionPerformed);
 
