@@ -35,7 +35,6 @@ public class Ventanaprincipal extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jMenu2 = new javax.swing.JMenu();
         jDesktopPane1 = new javax.swing.JDesktopPane(){
             private java.awt.Image imagen = new javax.swing.ImageIcon(
                 getClass().getResource("/imagenes/banner.png")
@@ -54,9 +53,7 @@ public class Ventanaprincipal extends javax.swing.JFrame {
         jMenuEntrenadores = new javax.swing.JMenuItem();
         jMenuPase = new javax.swing.JMenuItem();
         jMenuAsistencias = new javax.swing.JMenuItem();
-        jMenuSalir = new javax.swing.JMenu();
-
-        jMenu2.setText("jMenu2");
+        jMenuSalir = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -237,7 +234,6 @@ public class Ventanaprincipal extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
-    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenuAdministracion;
     private javax.swing.JMenuItem jMenuAsistencias;
     private javax.swing.JMenuBar jMenuBar1;
@@ -245,7 +241,7 @@ public class Ventanaprincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuEntrenadores;
     private javax.swing.JMenuItem jMenuGestionSocios;
     private javax.swing.JMenuItem jMenuPase;
-    private javax.swing.JMenu jMenuSalir;
+    private javax.swing.JMenuItem jMenuSalir;
     // End of variables declaration//GEN-END:variables
 }
 

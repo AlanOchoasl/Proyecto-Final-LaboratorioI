@@ -382,7 +382,7 @@ public class VistaPase extends javax.swing.JInternalFrame {
         }
         try {
             if (paseData.bajaLogica(paseCargado.getIdPase())) {
-                info("Pase eliminado.");
+                info("Pase dado de baja.");
                 limpiar();
                 cargarTabla();
             } else {
